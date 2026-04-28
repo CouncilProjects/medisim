@@ -1,7 +1,4 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
 
 // Import styles of packages that you've installed.
 // All packages except `@mantine/hooks` require styles imports
@@ -18,19 +15,17 @@ import {
   Title,
   Text,
   Button,
-  Image,
-  Card,
-  Anchor,
-  SimpleGrid,
-  ThemeIcon,
+  useMantineTheme
 } from "@mantine/core";
 
 
 import { IconSun,IconMoon } from '@tabler/icons-react';
+import { NavLink } from 'react-router';
 
 
-function App() {
+export function App() {
   const [count,setCount] = useState(0)
+  const theme = useMantineTheme();
   //to change theme i wil use a mantine hook
   const {colorScheme,toggleColorScheme} = useMantineColorScheme()
 
@@ -41,7 +36,10 @@ function App() {
           <Text>You will soon load a scenario</Text>
           <Button onClick={()=>{toggleColorScheme()}}>{colorScheme=='dark'?<IconMoon></IconMoon>:<IconSun></IconSun>}</Button>
 
-          <Button>I am ready</Button>
+        <NavLink to="course" end>
+          <Button>Show me the basics</Button>
+        </NavLink>
+          
           <Group>
             <Button bg={'red'}>Report</Button>
             <Button bg={'pink'}>Donate</Button>
