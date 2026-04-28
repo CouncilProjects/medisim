@@ -1,6 +1,6 @@
 import { Box, Button, Card, Container, Divider, Modal, Stack,Text,Title, Tooltip } from "@mantine/core";
 import { useDisclosure, useLocalStorage } from "@mantine/hooks";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { type OutletContextType } from "../App";
 import { OnLineHelp, type PageHelp } from "../common/onlineHelp";
 
@@ -81,6 +81,8 @@ export default function Home(){
         defaultValue: [],
     });
 
+    const nav = useNavigate();
+
     const [resumePanel,resumePanelHandlers] = useDisclosure(false);
     const { helpNeeded } = useOutletContext<OutletContextType>();
     console.log(helpNeeded);
@@ -92,21 +94,21 @@ export default function Home(){
                 <Text size="sm">Chose an action</Text>
                 <Box>
                     <Stack>
-                        <Tooltip position="right" label="You will need to load a json scenario from your files" opened={helpNeeded}>
+
                             <Button>
                                 <Text>Load a scenario</Text>
                             </Button>
-                        </Tooltip>
-                        <Tooltip position="right"  label="Select one of the scenarios loaded but not yet completed" opened={helpNeeded}>
+
+
                             <Button disabled={storedScen == null} onClick={() => { resumePanelHandlers.toggle() }}>
                                 <Text>Resume a scenario</Text>
                             </Button>
-                        </Tooltip>
-                        <Tooltip position="right" label="Look at the area you will work" opened={helpNeeded}>
-                            <Button>
+
+
+                            <Button onClick={()=>{nav("/test")}}>
                                 <Text>Preview area</Text>
                             </Button>
-                        </Tooltip>
+
                     </Stack>
                 </Box>
             </Card>

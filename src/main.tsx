@@ -8,6 +8,7 @@ import { MantineProvider } from '@mantine/core';
 import { mantineTheme } from './theme.ts';
 import ColorCourse from './crashcourse/basics2.tsx';
 import Home from './home/home.tsx';
+import TestImage from './test.tsx';
 
 createRoot(document.getElementById('root')!).render(
 <StrictMode>
@@ -16,6 +17,7 @@ createRoot(document.getElementById('root')!).render(
               <Routes>
                 <Route path='/' element={<App></App>}>
                   <Route index path='home' element={<Home></Home>}></Route>
+                  <Route index path='test' element={<TestImage></TestImage>}></Route>
                 </Route>
               </Routes>
             </BrowserRouter>
