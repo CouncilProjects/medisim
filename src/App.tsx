@@ -24,12 +24,15 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router';
 import { useDisclosure } from '@mantine/hooks';
 import { useThemeDepends } from './hooks/themeHook';
 
+export type OutletContextType = {
+  helpNeeded: {value:boolean,toggle:()=>{}};
+};
 
 export function App() {
   const {} = useMantineTheme();
   //to change theme i wil use a mantine hook
   const {colorScheme,toggleColorScheme} = useMantineColorScheme();
-  const [opened, { toggle }] = useDisclosure();
+  const [opened, { toggle }] = useDisclosure(false);
 
   let navigate = useNavigate();
   
@@ -48,12 +51,6 @@ export function App() {
     >
       <AppShell.Header p={'sm'}>
         <Flex direction={'row'}>
-          <Burger
-            opened={opened}
-            onClick={toggle}
-            hiddenFrom="sm"
-            size="sm"
-          />
 
           <Box>
             <Center w={64}>
@@ -67,7 +64,7 @@ export function App() {
             <Button variant='gradient' onClick={() => { toggleColorScheme() }}>
               {useThemeDepends(<IconSun></IconSun>, <IconMoon></IconMoon>)}
             </Button>
-            <Button radius={'50%'} ml={1} variant='outline' onClick={() => { toggleColorScheme() }}>
+            <Button radius={'50%'} ml={1} variant='outline' onClick={() => { toggle() }}>
               <IconHelp></IconHelp>
             </Button>
           </Group>
@@ -75,7 +72,7 @@ export function App() {
       </AppShell.Header>
 
 
-      <AppShell.Main><Outlet></Outlet></AppShell.Main>
+      <AppShell.Main><Outlet context={{"helpNeeded":{value:opened,toggle}}}></Outlet></AppShell.Main>
     </AppShell>
   );
 }
