@@ -61,10 +61,10 @@ export function App() {
           <Title>Medisim <Text span size='sm'>gr</Text></Title>
 
           <Group ml={'auto'}>
-            <Button variant='gradient' onClick={() => { toggleColorScheme() }}>
+            <Button variant='outline' onClick={() => { toggleColorScheme() }}>
               {useThemeDepends(<IconSun></IconSun>, <IconMoon></IconMoon>)}
             </Button>
-            <Button radius={'50%'} ml={1} variant='outline' onClick={() => { toggle() }}>
+            <Button variant="gradient" radius={'50%'} ml={1} onClick={() => { toggle() }}>
               <IconHelp></IconHelp>
             </Button>
           </Group>
@@ -72,7 +72,7 @@ export function App() {
       </AppShell.Header>
 
 
-      <AppShell.Main><Outlet context={{"helpNeeded":{value:opened,toggle}}}></Outlet></AppShell.Main>
+      <AppShell.Main p={0}><Outlet context={{"helpNeeded":{value:opened,toggle}}}></Outlet></AppShell.Main>
     </AppShell>
   );
 }
