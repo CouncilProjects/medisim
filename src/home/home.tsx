@@ -113,7 +113,7 @@ export default function Home(){
                 </Box>
             </Card>
             <Modal opened={resumePanel} onClose={resumePanelHandlers.close} title="Select scenario">
-                {storedScen.map((scen,index)=>
+                {storedScen.map((scen)=>
                     <ChoiceCard scen={scen} onClicked={()=>{resumePanelHandlers.close(); console.log(scen)}}></ChoiceCard>
                 )}
             </Modal>
@@ -125,11 +125,11 @@ export default function Home(){
     )
 }
 
-function ChoiceCard({scen,onClicked}){
+function ChoiceCard({scen,onClicked}:{scen:any,onClicked:any}){
     const [hovered,handlers] = useDisclosure(false)
 
     return(
-        <Card style={{cursor:'pointer'}} onClick={onClicked} mb={hovered?10:4} mt={hovered?6:0} p={4} pl={10} onPointerEnter={(e)=>{handlers.open()}} onPointerLeave={()=>{handlers.close()}} bd={hovered&&"1px solid orange"}>
+        <Card style={{cursor:'pointer'}} onClick={onClicked} mb={hovered?10:4} mt={hovered?6:0} p={4} pl={10} onPointerEnter={()=>{handlers.open()}} onPointerLeave={()=>{handlers.close()}} bd={hovered?"1px solid orange":"none"}>
             <Stack p={1}>
                 <Text m={0}>Scenario : {scen.name}</Text>
                 <Text m={0}>Taken by : {scen.user}</Text>

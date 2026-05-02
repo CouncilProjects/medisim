@@ -12,7 +12,7 @@ type Hotspot={
     onClick:()=>void
 }
 
-export function makeHotspot(x:number,y:number,onClick:()=>void,content:string=null,w=50,h=50) : Hotspot{
+export function makeHotspot(x:number,y:number,onClick:()=>void,content:string|null=null,w=50,h=50) : Hotspot{
     return {x:x+"%",y:y+"%",h:h,w:w,onClick:onClick,content:content}
 }
 
