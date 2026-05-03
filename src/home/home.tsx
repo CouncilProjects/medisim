@@ -1,27 +1,15 @@
-import { Box, Button, Card, Container, Divider, Modal, Stack,Text,Title, Tooltip } from "@mantine/core";
+import { Box, Button, Card, Center, Container, Divider, Modal, Stack,Text,Title, Tooltip } from "@mantine/core";
 import { useDisclosure, useLocalStorage } from "@mantine/hooks";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { type OutletContextType } from "../App";
 import { OnLineHelp, type PageHelp } from "../common/onlineHelp";
+import LoadScenario from "./load";
 
 type testScenario = {
-    name: string;
-    user: string;
-    timeStarted: string;
+    scenario: string;
+    username: string;
+    nodes:number
 };
-
-function Test() {
-        const defaultScenarios: testScenario[] = [
-            { name: "Scenario 1", user: "Alice", timeStarted: "10:00" },
-            { name: "Scenario 2", user: "Bob", timeStarted: "10:15" },
-            { name: "Scenario 3", user: "Charlie", timeStarted: "10:30" },
-            { name: "Scenario 4", user: "Diana", timeStarted: "10:45" },
-        ];
-
-        localStorage.setItem('ongoing-scenarios',JSON.stringify(defaultScenarios));
-
-        return null;
-    }
 
 
 const onlineHelp:PageHelp={
@@ -84,18 +72,19 @@ export default function Home(){
     const nav = useNavigate();
 
     const [resumePanel,resumePanelHandlers] = useDisclosure(false);
+    const [loadPanel, loadPanelHandlers] = useDisclosure(false);
+    const [downPanel, downPanelHandlers] = useDisclosure(false);
     const { helpNeeded } = useOutletContext<OutletContextType>();
     console.log(helpNeeded);
 
     return(
-        <Container>
+        <Center h={'100dvh'}>
             <Card>
                 <Title>Medisim home</Title>
                 <Text size="sm">Chose an action</Text>
                 <Box>
                     <Stack>
-
-                            <Button>
+                            <Button onClick={loadPanelHandlers.toggle}>
                                 <Text>Load a scenario</Text>
                             </Button>
 
@@ -118,10 +107,14 @@ export default function Home(){
                 )}
             </Modal>
 
+            {loadPanel &&
+                <LoadScenario closeFun={loadPanelHandlers.close}></LoadScenario>
+            }
+
             <Modal opened={helpNeeded.value} onClose={helpNeeded.toggle} title="On-line help">
                <OnLineHelp pageHelp={onlineHelp}></OnLineHelp>
             </Modal>
-        </Container>
+        </Center>
     )
 }
 
@@ -131,8 +124,8 @@ function ChoiceCard({scen,onClicked}:{scen:any,onClicked:any}){
     return(
         <Card style={{cursor:'pointer'}} onClick={onClicked} mb={hovered?10:4} mt={hovered?6:0} p={4} pl={10} onPointerEnter={()=>{handlers.open()}} onPointerLeave={()=>{handlers.close()}} bd={hovered?"1px solid orange":"none"}>
             <Stack p={1}>
-                <Text m={0}>Scenario : {scen.name}</Text>
-                <Text m={0}>Taken by : {scen.user}</Text>
+                <Text m={0}>Scenario : {scen.scenario}</Text>
+                <Text m={0}>Taken by : {scen.username}</Text>
             </Stack>
         </Card>
     )

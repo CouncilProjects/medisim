@@ -54,7 +54,7 @@ export function App() {
 
           <Box>
             <Center w={64}>
-              <Image src={"/favicon.svg"} alt='logo' w={32} h={32}></Image>
+              <Image src={"/favicon.png"} alt='logo' w={32} h={32}></Image>
             </Center>
           </Box>
 

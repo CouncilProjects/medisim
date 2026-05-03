@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
 import {makeHotspot, OverlayImage} from './common/overlayHotspot';
 import { notifications } from '@mantine/notifications';
-import { Box, Group, Kbd } from '@mantine/core';
+import { Box, Group, Kbd, useMantineTheme } from '@mantine/core';
 
 
 export default function TestImage(){
+    const theme = useMantineTheme()
+
 
     useEffect(()=>{
         notifications.show(
@@ -19,15 +21,15 @@ export default function TestImage(){
     },[]);
 
     return(
-        <Box w={'100dvw'} h={'100dvh'} m={0} style={{overflow:'hidden'}}>
+        <Box p={0} h={"100dvh"}>
             <OverlayImage src='/workspace.png'
                 hotspots={
                     [
-                        makeHotspot(25, 20, (() => { console.log("Vitals pressed") }), "Vitals", 200, 200),
-                        makeHotspot(22, 77, (() => { console.log("patient pressed") }), "Patient info", 145, 260),
-                        makeHotspot(76, 30, (() => { console.log("Vent pressed") }), "Ventilation", 190, 230),
-                        makeHotspot(90, 70, (() => { console.log("med pressed") }), "Medicine cabinet", 200, 455),
-                        makeHotspot(62, 23, (() => { console.log("doctor pressed") }), "Doctor call", 50, 70)
+                        makeHotspot(0.25,0.28, (() => { console.log("Vitals pressed") }), "Vitals", 215, 175),
+                        makeHotspot(0.22,0.70, (() => { console.log("patient pressed") }), "Patient info", 150, 190),
+                        makeHotspot(0.76,0.35, (() => { console.log("Vent pressed") }), "Ventilation", 180, 180),
+                        makeHotspot(0.90,0.65, (() => { console.log("med pressed") }), "Medicine cabinet", 240, 400),
+                        makeHotspot(0.61,0.31, (() => { console.log("doctor pressed") }), "Doctor call", 50, 70)
                     ]
                 }
             ></OverlayImage>
