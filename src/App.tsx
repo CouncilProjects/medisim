@@ -19,7 +19,7 @@ import {
 } from "@mantine/core";
 
 
-import { IconSun,IconMoon,IconHelp } from '@tabler/icons-react';
+import { IconSun,IconMoon,IconHelp,IconArrowBack } from '@tabler/icons-react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router';
 import { useDisclosure } from '@mantine/hooks';
 import { useThemeDepends } from './hooks/themeHook';
@@ -33,6 +33,7 @@ export function App() {
   //to change theme i wil use a mantine hook
   const {colorScheme,toggleColorScheme} = useMantineColorScheme();
   const [opened, { toggle }] = useDisclosure(false);
+  const loc = useLocation();
 
   let navigate = useNavigate();
   
@@ -61,6 +62,13 @@ export function App() {
           <Title>Medisim <Text span size='sm'>gr</Text></Title>
 
           <Group ml={'auto'}>
+            {loc.pathname.includes("test") &&
+              <Button variant='light' onClick={()=>navigate("/home")}>
+                  <IconArrowBack></IconArrowBack>
+              </Button>
+            }
+
+            
             <Button variant='outline' onClick={() => { toggleColorScheme() }}>
               {useThemeDepends(<IconSun></IconSun>, <IconMoon></IconMoon>)}
             </Button>

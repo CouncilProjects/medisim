@@ -50,7 +50,7 @@ export function placeholderValidateScenario(data: any): {
     };
 }
 
-export default function LoadScenario({ closeFun}) {
+export default function LoadScenario({ closeFun}:{closeFun:()=>void}) {
     const [scenarioError,setScenarioError] = useState("");
     const [nameError, setNameError] = useState("");
     const [error, setError] = useState("");
@@ -130,7 +130,7 @@ export default function LoadScenario({ closeFun}) {
                     position: 'top-right'
                 }
             )
-            setError(validated.error);
+            setError(validated.error||"Bad");
             return;
         }
 
