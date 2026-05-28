@@ -1,0 +1,52 @@
+import { ThemeIcon } from "@mantine/core";
+import type { AppEvents } from "./events";
+
+type eventCallback<K> = {
+    callback: (K)=>void,
+    id:number
+}
+
+type EventCallback<T> = (params: T) => void;
+
+
+class EventBusClass{
+    //private eventMap:Map<string,eventCallback[]>;
+    private eventMap:{ [K in keyof AppEvents] ?: Array<{callback:EventCallback<AppEvents[K]>,id:number}> } = {}
+    private callBackId:number;
+    
+    constructor(){
+        this.callBackId=0;
+    }
+
+
+    public on<K extends keyof AppEvents>(event:K,callback:EventCallback<AppEvents[K]>) : ()=>void{
+        if(!this.eventMap[event]){
+            this.eventMap[event] = [];
+        }
+        const id = this.callBackId++;
+
+        this.eventMap[event].push({callback,id});
+
+        return ()=>{this.removeCallback(event,id)}
+    }
+
+    private removeCallback(event,id){
+        var list = this.eventMap[event];
+        this.eventMap[event]=list.filter(call=>call.id!=id);
+    }
+
+    public emit<K extends keyof AppEvents>(event: K,params: AppEvents[K]){
+        const callbacks = this.eventMap[event];
+        if(callbacks==null || callbacks==undefined){
+            return;
+        }
+        
+        this.eventMap[event].forEach(callback=>{
+            callback.callback(params);
+        })
+    }
+}
+const eventBus = new EventBusClass();
+
+export default eventBus;
+
