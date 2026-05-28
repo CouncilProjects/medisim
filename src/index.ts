@@ -1,5 +1,5 @@
-import { validateVitals } from "./validators";
-import { validateConditions } from "./validators";
+import { validateVitals } from "./engine/validators";
+import { validateConditions } from "./engine/validators";
 
 const vital_data = {
   hr: { value: 60, state: "stable" },
