@@ -5,8 +5,14 @@ import { type Scenario,type Node, type Option, type Effect } from "./types";
 
 export class Engine{
     scenario:Scenario
-    constructor(scenario:Scenario){
-        this.scenario = scenario
+    constructor(){
+        console.log("Engine made");
+    }
+
+    setScenario(scen:Scenario){
+        console.log("I have set a scenario "+scen);
+        this.scenario=scen;
+        eventBus.emit("movedToNewNode", { nodeTitle: this.scenario.nodes[this.scenario.current_node].text });
     }
 
     // Source - https://stackoverflow.com/q/39060905
@@ -39,10 +45,7 @@ export class Engine{
     private moveToNode(nodeId:string){
         let node = this.scenario.nodes.findIndex(node => node.id == nodeId)
         this.scenario.current_node = node;
-    }
-
-    private findNextNode(option:Option):string{
-        return option.effects.find(effect => effect.type=="next_node").node_id
+        eventBus.emit("movedToNewNode",{nodeTitle:this.scenario.nodes[this.scenario.current_node].text});
     }
 
     private doEffects(eff:Effect[],action:Action){
@@ -72,6 +75,7 @@ export class Engine{
 
 
     public actionHappend(action:Action){
+        console.log("Action happend while "+JSON.stringify(this.scenario));
         var node:Node = this.getCurrentNode()
         if(node.options == null){
             return;
@@ -80,12 +84,13 @@ export class Engine{
         for(const opt of node.options){
             if(opt.action == action){
                 this.doEffects(opt.effects,action);
-                return;
+                return this.scenario;
             }
         }
         
         this.scenario.state.score-=5;
         eventBus.emit("actionResult", { action: action, node: this.scenario.current_node, score: this.scenario.state.score,valid:false});
+        return this.scenario;
     }
 
     testGetInfo(){
@@ -101,3 +106,6 @@ export class Engine{
         return [curNode.id,curNode.text] 
     }
 }
+
+const engine = new Engine;
+export default engine;

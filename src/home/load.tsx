@@ -2,6 +2,9 @@ import { Button, Card, Combobox, Fieldset, FileInput, Input, InputBase, Modal, S
 import { notifications } from "@mantine/notifications";
 import { useState } from "react";
 import { preLoadScenarios } from "./preloadedScenarios";
+import type { Scenario } from "../engine/types";
+import { useLocalStorage } from "@mantine/hooks";
+import { useNavigate } from "react-router";
 
 type ScenarioData = {
     scenario: string;
@@ -54,13 +57,14 @@ export default function LoadScenario({ closeFun}:{closeFun:()=>void}) {
     const [scenarioError,setScenarioError] = useState("");
     const [nameError, setNameError] = useState("");
     const [error, setError] = useState("");
-    const [checked, setChecked] = useState(true);
+    const [checked, setChecked] = useState(false);
+    const nav = useNavigate();
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
     });
 
     const options = preLoadScenarios.map((item,index) => (
-        {"label":item.scenario,"value":index+1}
+        {"label":item.title,"value":index+1}
     ));
 
 
@@ -77,6 +81,8 @@ export default function LoadScenario({ closeFun}:{closeFun:()=>void}) {
             return;
         }
 
+        let id = "";
+
         
 
         if(checked){
@@ -84,7 +90,7 @@ export default function LoadScenario({ closeFun}:{closeFun:()=>void}) {
                 setScenarioError("Not a file");
                 return;
             }
-            await handleCustom(data.get("fileIn") as File,data.get("nameIn") as string);
+            id = await handleCustom(data.get("fileIn") as File,data.get("nameIn") as string);
         } else {
             const preselected = Number(data.get("preselectIn"));
             console.log("here"+preselected);
@@ -97,21 +103,23 @@ export default function LoadScenario({ closeFun}:{closeFun:()=>void}) {
                 return;
             }
             
-            let scenPicked = preLoadScenarios[preselected-1];
+            let scenPicked = structuredClone(preLoadScenarios[preselected - 1]);
             scenPicked.username=data.get("nameIn") as string;
-            addScenario(scenPicked);
+            scenPicked.uuid = crypto.randomUUID();
+            id = addScenario(scenPicked);
         }
 
         
         
         done();
+        nav("/scenario/"+id);
     }
 
     const done = ()=>{
         closeFun();
     }
 
-    const handleCustom = async (scenario:File,name:string) =>{
+    const handleCustom = async (scenario:File,name:string):Promise<string> =>{
 
         console.log(scenario);
 
@@ -135,14 +143,18 @@ export default function LoadScenario({ closeFun}:{closeFun:()=>void}) {
         }
 
         js.username = name
-        addScenario(js);
+        return addScenario(js);
     }
 
-    const addScenario = (scen:any)=>{
-        const items: any[] = JSON.parse(localStorage.getItem('ongoing-scenarios') || '[]');
-        items.push(scen);
-        localStorage.setItem('ongoing-scenarios', JSON.stringify(items));
-    }
+    const [scenarios, setScenarios] = useLocalStorage<Scenario[]>({
+        key: 'medisim-ongoing-scenarios',
+        defaultValue: [],
+    });
+
+    const addScenario = (scen: Scenario) => {
+        setScenarios((prev) => [...prev, scen]);
+        return scen.uuid;
+    };
 
 
     return(
@@ -181,6 +193,7 @@ export default function LoadScenario({ closeFun}:{closeFun:()=>void}) {
                                         name="preselectIn"
                                         placeholder="Pick scenario"
                                         label="Select a preloaded scenario"
+                                        
                                         data={options}
                                         withAsterisk
                                         required

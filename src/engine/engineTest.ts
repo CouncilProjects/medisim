@@ -5,7 +5,8 @@ import eventBus from "../common/eventBus";
 import { Logger } from "./logger";
 
 const logger = new Logger("TestLogger");
-var engine = new Engine(preLoadScenarios[0]);
+var engine = new Engine();
+engine.setScenario(preLoadScenarios[0]);
 
 let end =false
 let index=0

@@ -4,6 +4,7 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import { type OutletContextType } from "../App";
 import { OnLineHelp, type PageHelp } from "../common/onlineHelp";
 import LoadScenario from "./load";
+import type { Scenario } from "../engine/types";
 
 type testScenario = {
     scenario: string;
@@ -64,8 +65,8 @@ export default function Home(){
 
     //https://mantine.dev/hooks/use-local-storage/
 
-    const [storedScen, setStoredScen,removeStoredScen] = useLocalStorage<testScenario[]>({
-        key: 'ongoing-scenarios',
+    const [storedScen, setStoredScen,removeStoredScen] = useLocalStorage<Scenario[]>({
+        key: 'medisim-ongoing-scenarios',
         defaultValue: [],
     });
 
@@ -102,8 +103,8 @@ export default function Home(){
                 </Box>
             </Card>
             <Modal opened={resumePanel} onClose={resumePanelHandlers.close} title="Select scenario">
-                {storedScen.map((scen)=>
-                    <ChoiceCard scen={scen} onClicked={()=>{resumePanelHandlers.close(); console.log(scen)}}></ChoiceCard>
+                {storedScen.map((scen,index)=>
+                    <ChoiceCard scen={scen} onClicked={()=>{resumePanelHandlers.close(); nav(`/scenario/${scen.uuid}`)}}></ChoiceCard>
                 )}
             </Modal>
 
@@ -118,13 +119,16 @@ export default function Home(){
     )
 }
 
-function ChoiceCard({scen,onClicked}:{scen:any,onClicked:any}){
+function ChoiceCard({scen,onClicked}:{scen:Scenario,onClicked:any}){
     const [hovered,handlers] = useDisclosure(false)
-
+    if (!scen || !scen.title || !scen.username) {
+        return null;
+    }
     return(
+        
         <Card style={{cursor:'pointer'}} onClick={onClicked} mb={hovered?10:4} mt={hovered?6:0} p={4} pl={10} onPointerEnter={()=>{handlers.open()}} onPointerLeave={()=>{handlers.close()}} bd={hovered?"1px solid orange":"none"}>
             <Stack p={1}>
-                <Text m={0}>Scenario : {scen.scenario}</Text>
+                <Text m={0}>Scenario : {scen.title}</Text>
                 <Text m={0}>Taken by : {scen.username}</Text>
             </Stack>
         </Card>

@@ -8,6 +8,7 @@ export const scenarioSchema = {
     properties: {
         id: {type: "string"},
         username: { type: "string"},
+        uuid: {type:"string"},
         title: { type: "string" },
         current_node: { type: "number"},
 

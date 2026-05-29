@@ -67,11 +67,11 @@ export function OverlayImage({src,hotspots}:overlayProps){
     const renderedH = layout.naturalH * scale;
 
     const offsetX = (layout.w - renderedW) / 2;
-    const offsetY = (layout.h - renderedH) / 2;
+    const offsetY = (layout.h - renderedH) / 2 - 60;
 
     return(
-        <Box w={"100%"} h={"100%"}  pos={'relative'} display={"inline-block"}>
-            <Image ref={imageRef} width={"100%"} height={"100%"} src={src} alt={"Image"} fit="cover"></Image>
+        <Box w={"100%"} h={"100%"}  pos={'relative'} display={"inline-block"} >
+            <Image ref={imageRef} width={"100%"} height={"100%"} src={src} alt={"Image"} fit="cover" style={{ objectPosition: 'center calc(50% - 60px)' }}></Image>
 
             {hotspots.map((spot,index)=>{
                 const x = spot.x * renderedW + offsetX;

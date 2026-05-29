@@ -50,7 +50,7 @@ export function App() {
       padding="md"
       header={{ height: 60 }}
     >
-      <AppShell.Header p={'sm'}>
+      <AppShell.Header p={'sm'} mb={5}>
         <Flex direction={'row'}>
 
           <Box>
@@ -62,8 +62,8 @@ export function App() {
           <Title>Medisim <Text span size='sm'>gr</Text></Title>
 
           <Group ml={'auto'}>
-            {loc.pathname.includes("test") &&
-              <Button variant='light' onClick={()=>navigate("/home")}>
+            {!loc.pathname.includes("/home") &&
+              <Button variant='light' onClick={()=>navigate(-1)}>
                   <IconArrowBack></IconArrowBack>
               </Button>
             }
@@ -80,7 +80,7 @@ export function App() {
       </AppShell.Header>
 
 
-      <AppShell.Main p={0}><Outlet context={{"helpNeeded":{value:opened,toggle}}}></Outlet></AppShell.Main>
+      <AppShell.Main px={0} pt={60}><Outlet context={{"helpNeeded":{value:opened,toggle}}}></Outlet></AppShell.Main>
     </AppShell>
   );
 }

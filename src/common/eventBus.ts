@@ -1,6 +1,9 @@
 import { ThemeIcon } from "@mantine/core";
 import type { AppEvents } from "./events";
 
+//for more info on event busses. 
+//https://dev.to/mohsenfallahnjd/javascript-event-bus-js-typescript-17jp
+
 type eventCallback<K> = {
     callback: (K)=>void,
     id:number
@@ -26,6 +29,8 @@ class EventBusClass{
         const id = this.callBackId++;
 
         this.eventMap[event].push({callback,id});
+
+        console.log("Event registered for " + event);
 
         return ()=>{this.removeCallback(event,id)}
     }

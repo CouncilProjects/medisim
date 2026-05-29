@@ -41,6 +41,7 @@ export type Timeout = {
 
 export type Scenario = {
     id: string;
+    uuid?:string,
     username?: string;
     title: string;
     current_node: number;
