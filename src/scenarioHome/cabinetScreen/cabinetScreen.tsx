@@ -1,75 +1,82 @@
 import React from 'react';
-import { Stack, Group, Button, Text, Divider } from '@mantine/core';
+import { Stack, Group, Button, Text, Divider, Center } from '@mantine/core';
 import { Actions } from '../../engine/schemas/actionEnum';
 import eventBus from '../../common/eventBus';
+import { useClickOutside } from '@mantine/hooks';
+import { useNavigate } from 'react-router';
 
 export default function CabinetScreen() {
+    const nav = useNavigate();
+    const ref = useClickOutside(() => nav(-1));
+
     return (
-        <Stack bg={'dark'} p={4} gap="md">
-            <Text fw={700} size="lg">Medicine Cabinet & Procedures</Text>
+        <Center w={'100%'} h={'100%'}>
+            <Stack ref={ref} bg={'dark'} p={4} gap="md">
+                <Text fw={700} size="lg">Medicine Cabinet & Procedures</Text>
 
-            {/* Painkillers */}
-            <Group grow>
-                <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.painkillers })}>
-                    Painkillers
-                </Button>
-                <Button variant="light" onClick={() => eventBus.emit("buttonPressed", { action: Actions.painkillersLight })}>
-                    Painkillers Light
-                </Button>
-            </Group>
+                {/* Painkillers */}
+                <Group grow>
+                    <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.painkillers })}>
+                        Painkillers
+                    </Button>
+                    <Button variant="light" onClick={() => eventBus.emit("buttonPressed", { action: Actions.painkillersLight })}>
+                        Painkillers Light
+                    </Button>
+                </Group>
 
-            <Divider />
+                <Divider />
 
-            {/* Blood Pressure */}
-            <Text size="sm" fw={500} c="dimmed">Blood Pressure Controls</Text>
-            <Group grow gap="xs">
-                <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.bloodPressureUp })}>
-                    BP Up
-                </Button>
-                <Button variant="light" onClick={() => eventBus.emit("buttonPressed", { action: Actions.bloodPressureUpLight })}>
-                    BP Up Light
-                </Button>
-                <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.bloodPressureDown })}>
-                    BP Down
-                </Button>
-                <Button variant="light" onClick={() => eventBus.emit("buttonPressed", { action: Actions.bloodPressureDownLight })}>
-                    BP Down Light
-                </Button>
-            </Group>
+                {/* Blood Pressure */}
+                <Text size="sm" fw={500} c="dimmed">Blood Pressure Controls</Text>
+                <Group grow gap="xs">
+                    <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.bloodPressureUp })}>
+                        BP Up
+                    </Button>
+                    <Button variant="light" onClick={() => eventBus.emit("buttonPressed", { action: Actions.bloodPressureUpLight })}>
+                        BP Up Light
+                    </Button>
+                    <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.bloodPressureDown })}>
+                        BP Down
+                    </Button>
+                    <Button variant="light" onClick={() => eventBus.emit("buttonPressed", { action: Actions.bloodPressureDownLight })}>
+                        BP Down Light
+                    </Button>
+                </Group>
 
-            <Divider />
+                <Divider />
 
-            {/* Temperature */}
-            <Text size="sm" fw={500} c="dimmed">Temperature Controls</Text>
-            <Group grow gap="xs">
-                <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.tempUp })}>
-                    Temp Up
-                </Button>
-                <Button variant="light" onClick={() => eventBus.emit("buttonPressed", { action: Actions.tempUpLight })}>
-                    Temp Up Light
-                </Button>
-                <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.tempDown })}>
-                    Temp Down
-                </Button>
-                <Button variant="light" onClick={() => eventBus.emit("buttonPressed", { action: Actions.tempDownLight })}>
-                    Temp Down Light
-                </Button>
-            </Group>
+                {/* Temperature */}
+                <Text size="sm" fw={500} c="dimmed">Temperature Controls</Text>
+                <Group grow gap="xs">
+                    <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.tempUp })}>
+                        Temp Up
+                    </Button>
+                    <Button variant="light" onClick={() => eventBus.emit("buttonPressed", { action: Actions.tempUpLight })}>
+                        Temp Up Light
+                    </Button>
+                    <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.tempDown })}>
+                        Temp Down
+                    </Button>
+                    <Button variant="light" onClick={() => eventBus.emit("buttonPressed", { action: Actions.tempDownLight })}>
+                        Temp Down Light
+                    </Button>
+                </Group>
 
-            <Divider />
+                <Divider />
 
-            {/* Misc Procedures */}
-            <Group grow>
-                <Button variant="outline" color="gray" onClick={() => eventBus.emit("buttonPressed", { action: Actions.wait })}>
-                    Wait
-                </Button>
-                <Button variant="outline" onClick={() => eventBus.emit("buttonPressed", { action: Actions.callDoctor })}>
-                    Call Doctor
-                </Button>
-                <Button variant="outline" onClick={() => eventBus.emit("buttonPressed", { action: Actions.doTests })}>
-                    Do Tests
-                </Button>
-            </Group>
-        </Stack>
+                {/* Misc Procedures */}
+                <Group grow>
+                    <Button variant="outline" color="gray" onClick={() => eventBus.emit("buttonPressed", { action: Actions.wait })}>
+                        Wait
+                    </Button>
+                    <Button variant="outline" onClick={() => eventBus.emit("buttonPressed", { action: Actions.callDoctor })}>
+                        Call Doctor
+                    </Button>
+                    <Button variant="outline" onClick={() => eventBus.emit("buttonPressed", { action: Actions.doTests })}>
+                        Do Tests
+                    </Button>
+                </Group>
+            </Stack>
+        </Center>
     );
 }

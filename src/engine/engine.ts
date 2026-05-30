@@ -10,7 +10,6 @@ export class Engine{
     }
 
     setScenario(scen:Scenario){
-        console.log("I have set a scenario "+scen);
         this.scenario=scen;
         eventBus.emit("movedToNewNode", { nodeTitle: this.scenario.nodes[this.scenario.current_node].text });
     }
@@ -75,7 +74,6 @@ export class Engine{
 
 
     public actionHappend(action:Action){
-        console.log("Action happend while "+JSON.stringify(this.scenario));
         var node:Node = this.getCurrentNode()
         if(node.options == null){
             return;

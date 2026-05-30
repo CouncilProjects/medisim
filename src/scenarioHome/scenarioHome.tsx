@@ -1,4 +1,4 @@
-import { Box, Group, JsonInput, Kbd, keys, NativeScrollArea, useMantineTheme } from "@mantine/core";
+import { Box, Center, Group, JsonInput, Kbd, keys, Loader, NativeScrollArea, useMantineTheme } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { use, useEffect, useMemo, useRef, useState } from "react";
 import { makeHotspot, OverlayImage } from "../common/overlayHotspot";
@@ -14,7 +14,9 @@ export function ScenarioHome(){
     const theme = useMantineTheme();
     let params = useParams();
     let nav = useNavigate();
+    const [loadDone,setLoadDone] = useState(false);
     let [scenarios,setScenarios] = useLocalStorage<Scenario[]>({key:"medisim-ongoing-scenarios",defaultValue:[]});
+    let workingScenario = scenarios.find(scen => scen.uuid === params.scenarioId);
 
     
     useEffect(() => {
@@ -58,7 +60,6 @@ export function ScenarioHome(){
         const unsub3 = eventBus.on("buttonPressed", ({ action }) => {
             knownAction.current=true;
             const changed = engine.actionHappend(action);
-            console.log("I got from engine : "+JSON.stringify(changed));
 
             setScenarios(prev => {
                 const updated = [...prev];
@@ -79,7 +80,6 @@ export function ScenarioHome(){
                     position: 'top-center'
                 }
             );
-            console.log(params.scenarioId);
             setScenarios((prev)=>{
                 if(prev.length==0) return [];
                 return prev.filter(val=>val.uuid!==params.scenarioId);
@@ -99,20 +99,27 @@ export function ScenarioHome(){
     
     useEffect(() => {
         console.log("Done :" +knownAction);
-        if (!scenarios || scenarios.length === 0) return;
+        if (!workingScenario || scenarios.length === 0) return;
+        if(loadDone==false){
+            setLoadDone(true);
+        }
         if(knownAction.current){
             knownAction.current=false;
             return;
         }
 
-        const copy = structuredClone(scenarios.find(scen=>scen.uuid===params.scenarioId));
+        const copy = structuredClone(workingScenario);
         engine.setScenario(copy);
 
         
         return () => {
             console.log("Ending effect deregistering eventbus");
         };
-    }, [params.scenarioId,scenarios]);
+    }, [params.scenarioId,workingScenario]);
+
+    if(!loadDone){
+        return <Loader></Loader>
+    }
     
 
     return(
@@ -124,8 +131,7 @@ export function ScenarioHome(){
                 backgroundRepeat: "no-repeat", // Prevents tiling
                 backgroundAttachment: "fixed"  // Optional: keeps background static while content scrolls
             }}>
-            <Outlet></Outlet>
-            
+            <Outlet context={workingScenario ? workingScenario.state.vitals : null}></Outlet>
         </Box>
     )
 }

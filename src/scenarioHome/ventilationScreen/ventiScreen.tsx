@@ -1,30 +1,46 @@
 import React from 'react';
-import { Stack, Group, Button, Text } from '@mantine/core';
+import { Stack, Group, Button, Text, Center } from '@mantine/core';
 import { Actions } from '../../engine/schemas/actionEnum';
 import eventBus from '../../common/eventBus';
+import { useNavigate, useOutletContext } from 'react-router';
+import { type Vitals } from '../../engine/types';
+import { useFlashOnChange } from '../../hooks/flashOnChange';
+import { useClickOutside } from '@mantine/hooks';
 
 export default function VentilationScreen() {
+    const context = useOutletContext<Vitals>();
+    const nav = useNavigate();
+
+    const spo2Flash = useFlashOnChange(context.spo2.value,500);
+
+    const rrFlash = useFlashOnChange(context.rr.value, 500);
+
+    const ref = useClickOutside(() => nav(-1));
+
     return (
-        <Stack bg={'dark'} p={4} gap="md">
-            <Text fw={700} size="lg">Ventilation Controls</Text>
+        <Center w="100%"  h="100%">
+            <Stack ref={ref} bg={'dark'} p={4} gap="md">
+                <Text fw={700} size="lg">Ventilation Controls</Text>
+                <Text fw={300} size="md" bg={spo2Flash?'orange':'transparent'}>SPo2 : {context.spo2.value} currently {context.spo2.state}</Text>
+                <Text fw={300} size="md" bg={rrFlash ? 'orange' : 'transparent'}>Respitory rate : {context.rr.value} currently {context.rr.state}</Text>
+                <Group grow>
+                    <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.oxygenDensityUp })}>
+                        Oxygen Density Up
+                    </Button>
+                    <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.oxygenDensityDown })}>
+                        Oxygen Density Down
+                    </Button>
+                </Group>
 
-            <Group grow>
-                <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.oxygenDensityUp })}>
-                    Oxygen Density Up
-                </Button>
-                <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.oxygenDensityDown })}>
-                    Oxygen Density Down
-                </Button>
-            </Group>
-
-            <Group grow>
-                <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.oxyPumpsUp })}>
-                    Oxy Pumps Up
-                </Button>
-                <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.oxyPumpsDown })}>
-                    Oxy Pumps Down
-                </Button>
-            </Group>
-        </Stack>
+                <Group grow>
+                    <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.oxyPumpsUp })}>
+                        Oxy Pumps Up
+                    </Button>
+                    <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.oxyPumpsDown })}>
+                        Oxy Pumps Down
+                    </Button>
+                </Group>
+            </Stack>
+        </Center>
     );
 }
