@@ -1,10 +1,11 @@
-import { Box, Button, Card, Center, Container, Divider, Modal, Stack,Text,Title, Tooltip } from "@mantine/core";
+import { Box, Button, Card, Center, Checkbox, Container, Divider, Modal, Stack,Switch,Text,Title, Tooltip } from "@mantine/core";
 import { useDisclosure, useLocalStorage } from "@mantine/hooks";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { type OutletContextType } from "../App";
 import { OnLineHelp, type PageHelp } from "../common/onlineHelp";
 import LoadScenario from "./load";
 import type { Scenario } from "../engine/types";
+import { useState } from "react";
 
 type testScenario = {
     scenario: string;
@@ -70,6 +71,12 @@ export default function Home(){
         defaultValue: [],
     });
 
+    function deleteScenario(id){
+        setStoredScen((prev)=>{
+            return prev.filter(val=>val.uuid!=id)
+        })
+    }
+
     const nav = useNavigate();
 
     const [resumePanel,resumePanelHandlers] = useDisclosure(false);
@@ -77,6 +84,7 @@ export default function Home(){
     const [downPanel, downPanelHandlers] = useDisclosure(false);
     const { helpNeeded } = useOutletContext<OutletContextType>();
     console.log(helpNeeded);
+    const [checkedDelete, setCheckedDelete] = useState(false);
 
     return(
         <Center h={'100dvh'}>
@@ -103,8 +111,9 @@ export default function Home(){
                 </Box>
             </Card>
             <Modal opened={resumePanel} onClose={resumePanelHandlers.close} title="Select scenario">
+                <Switch m={12} onChange={(event) => { setCheckedDelete(event.target.checked) }} checked={checkedDelete} label={"Delete selection"}></Switch>
                 {storedScen.map((scen,index)=>
-                    <ChoiceCard scen={scen} onClicked={()=>{resumePanelHandlers.close(); nav(`/scenario/${scen.uuid}`)}}></ChoiceCard>
+                    <ChoiceCard scen={scen} onClicked={checkedDelete?()=>{deleteScenario(scen.uuid)}:()=>{resumePanelHandlers.close(); nav(`/scenario/${scen.uuid}`)}}></ChoiceCard>
                 )}
             </Modal>
 
