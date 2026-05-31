@@ -19,7 +19,7 @@ import CabinetScreen from './scenarioHome/cabinetScreen/cabinetScreen.tsx';
 import { OverlayImageMenu } from './scenarioHome/overlayImage.tsx';
 
 createRoot(document.getElementById('root')!).render(
-
+            <StrictMode>
             <MantineProvider theme={mantineTheme} defaultColorScheme='dark'>
               <Notifications></Notifications>
               <BrowserRouter>
@@ -38,5 +38,6 @@ createRoot(document.getElementById('root')!).render(
                 </Routes>
               </BrowserRouter>
             </MantineProvider>
+            </StrictMode>
           ,
 )

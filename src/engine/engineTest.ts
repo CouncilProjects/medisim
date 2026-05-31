@@ -4,8 +4,8 @@ import { Actions } from "./schemas/actionEnum";
 import eventBus from "../common/eventBus";
 import { Logger } from "./logger";
 
-const logger = new Logger("TestLogger");
-var engine = new Engine();
+new Logger("TestLogger");
+const engine = new Engine();
 engine.setScenario(preLoadScenarios[0]);
 
 let end =false
@@ -17,7 +17,7 @@ engine.testGetInfo();
 
 
 //fake action sequence
-let fakeActionSeq = [Actions.oxyPumpsUp,Actions.bloodPressureUp,Actions.oxyPumpsDown,Actions.wait]
+const fakeActionSeq = [Actions.oxyPumpsUp,Actions.bloodPressureUp,Actions.oxyPumpsDown,Actions.wait]
 
 while (!end) {
     eventBus.emit("buttonPressed",{action:fakeActionSeq[index]});

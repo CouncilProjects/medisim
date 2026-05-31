@@ -1,10 +1,9 @@
 import eventBus from "../common/eventBus";
 import type { Action } from "./schemas/actionEnum";
-import { scenarioSchema } from "./schemas/scenario.schemas";
-import { type Scenario,type Node, type Option, type Effect } from "./types";
+import { type Scenario,type Node, type Effect } from "./types";
 
 export class Engine{
-    scenario:Scenario
+    scenario!:Scenario
     constructor(){
         console.log("Engine made");
     }
@@ -20,12 +19,15 @@ export class Engine{
     // https://stackoverflow.com/questions/13719593/how-to-set-object-property-of-object-property-of-given-its-string-name-in-ja
     //https://stackoverflow.com/questions/6842795/dynamic-deep-setting-for-a-javascript-object
     //https://stackoverflow.com/questions/39060905/how-recursion-takes-place-in-this-code-snippet
-    private assign(obj, prop, value) {
+    
+    
+    private assign(obj:Record<string,any>, prop:string|string[], value:any) {
         if (typeof prop === "string")
             prop = prop.split(".");
 
         if (prop.length > 1) {
-            var e = prop.shift();
+            const e = prop.shift();
+            if (e === undefined) return;
             this.assign(obj[e] =
                 Object.prototype.toString.call(obj[e]) === "[object Object]"
                     ? obj[e]
@@ -42,7 +44,7 @@ export class Engine{
     }
 
     private moveToNode(nodeId:string){
-        let node = this.scenario.nodes.findIndex(node => node.id == nodeId)
+        const node = this.scenario.nodes.findIndex(node => node.id == nodeId)
         this.scenario.current_node = node;
         eventBus.emit("movedToNewNode",{nodeTitle:this.scenario.nodes[this.scenario.current_node].text});
     }
@@ -73,10 +75,11 @@ export class Engine{
     }
 
 
-    public actionHappend(action:Action){
-        var node:Node = this.getCurrentNode()
+    public actionHappend(action:Action) : Scenario|null{
+        if(!this.scenario) return null;
+        const node:Node = this.getCurrentNode()
         if(node.options == null){
-            return;
+            return null;
         }
 
         for(const opt of node.options){
@@ -100,7 +103,7 @@ export class Engine{
     }
 
     getCurrentNodeInfo(){
-        var curNode = this.getCurrentNode()
+        const curNode = this.getCurrentNode()
         return [curNode.id,curNode.text] 
     }
 }

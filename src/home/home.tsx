@@ -1,4 +1,4 @@
-import { Box, Button, Card, Center, Checkbox, Container, Divider, Modal, Stack,Switch,Text,Title, Tooltip } from "@mantine/core";
+import { Box, Button, Card, Center, Modal, Stack,Switch,Text,Title } from "@mantine/core";
 import { useDisclosure, useLocalStorage } from "@mantine/hooks";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { type OutletContextType } from "../App";
@@ -7,11 +7,6 @@ import LoadScenario from "./load";
 import type { Scenario } from "../engine/types";
 import { useState } from "react";
 
-type testScenario = {
-    scenario: string;
-    username: string;
-    nodes:number
-};
 
 
 const onlineHelp:PageHelp={
@@ -66,12 +61,13 @@ export default function Home(){
 
     //https://mantine.dev/hooks/use-local-storage/
 
-    const [storedScen, setStoredScen,removeStoredScen] = useLocalStorage<Scenario[]>({
+    const [storedScen, setStoredScen] = useLocalStorage<Scenario[]>({
         key: 'medisim-ongoing-scenarios',
         defaultValue: [],
     });
 
-    function deleteScenario(id){
+    function deleteScenario(id?:string){
+        if(id==undefined) return;
         setStoredScen((prev)=>{
             return prev.filter(val=>val.uuid!=id)
         })
@@ -81,7 +77,6 @@ export default function Home(){
 
     const [resumePanel,resumePanelHandlers] = useDisclosure(false);
     const [loadPanel, loadPanelHandlers] = useDisclosure(false);
-    const [downPanel, downPanelHandlers] = useDisclosure(false);
     const { helpNeeded } = useOutletContext<OutletContextType>();
     console.log(helpNeeded);
     const [checkedDelete, setCheckedDelete] = useState(false);
@@ -112,7 +107,7 @@ export default function Home(){
             </Card>
             <Modal opened={resumePanel} onClose={resumePanelHandlers.close} title="Select scenario">
                 <Switch m={12} onChange={(event) => { setCheckedDelete(event.target.checked) }} checked={checkedDelete} label={"Delete selection"}></Switch>
-                {storedScen.map((scen,index)=>
+                {storedScen.map((scen)=>
                     <ChoiceCard scen={scen} onClicked={checkedDelete?()=>{deleteScenario(scen.uuid)}:()=>{resumePanelHandlers.close(); nav(`/scenario/${scen.uuid}`)}}></ChoiceCard>
                 )}
             </Modal>
@@ -128,7 +123,7 @@ export default function Home(){
     )
 }
 
-function ChoiceCard({scen,onClicked}:{scen:Scenario,onClicked:any}){
+function ChoiceCard({scen,onClicked}:{scen:Scenario,onClicked:()=>void}){
     const [hovered,handlers] = useDisclosure(false)
     if (!scen || !scen.title || !scen.username) {
         return null;

@@ -6,7 +6,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "try":"tsc --noEmit && eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@mantine/charts": "^9.1.1",

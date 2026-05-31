@@ -18,4 +18,6 @@ WORKDIR /app
 EXPOSE 80
 COPY --from=build /app/dist /usr/share/nginx/html
 #take it from local dont take conf from the build
-COPY nginx.conf /etc/nginx/conf.d/default.conf 
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+CMD ["nginx", "-g", "daemon off;"]

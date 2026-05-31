@@ -16,7 +16,7 @@ export class Logger{
 
     private printLogs(){
         console.log("Logs of logger : "+this.name);
-        for(let log of this.logs){
+        for(const log of this.logs){
             console.log(log);
         }
     }

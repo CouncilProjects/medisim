@@ -1,11 +1,10 @@
 import { useEffect } from 'react';
 import {makeHotspot, OverlayImage} from './common/overlayHotspot';
 import { notifications } from '@mantine/notifications';
-import { Box, Group, Kbd, useMantineTheme } from '@mantine/core';
+import { Box, Group, Kbd } from '@mantine/core';
 
 
 export default function TestImage(){
-    const theme = useMantineTheme()
 
 
     useEffect(()=>{

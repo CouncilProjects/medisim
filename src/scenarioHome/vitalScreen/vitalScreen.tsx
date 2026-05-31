@@ -1,5 +1,4 @@
-import { useClickOutside, useLocalStorage } from '@mantine/hooks';
-import React, { useState } from 'react';
+import { useClickOutside } from '@mantine/hooks';
 import eventBus from '../../common/eventBus';
 import { Actions } from '../../engine/schemas/actionEnum';
 import { Button, Center, Stack,Text } from '@mantine/core';

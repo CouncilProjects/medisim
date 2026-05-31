@@ -1,49 +1,42 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 // Import styles of packages that you've installed.
 // All packages except `@mantine/hooks` require styles imports
 import '@mantine/core/styles.css';
 
-import { AppShell, Box, Burger, Center, Flex, Image, MantineProvider, useMantineColorScheme } from '@mantine/core';
-
-import {mantineTheme} from './theme'
+import { AppShell, Box, Center, Flex, Image, useMantineColorScheme } from '@mantine/core';
 
 import {
-  Container,
-  Stack,
   Group,
   Title,
   Text,
   Button,
-  useMantineTheme
 } from "@mantine/core";
 
 
 import { IconSun,IconMoon,IconHelp,IconArrowBack } from '@tabler/icons-react';
-import { NavLink, Outlet, useLocation, useNavigate } from 'react-router';
+import { Outlet, useLocation, useNavigate } from 'react-router';
 import { useDisclosure } from '@mantine/hooks';
 import { useThemeDepends } from './hooks/themeHook';
 
 export type OutletContextType = {
-  helpNeeded: {value:boolean,toggle:()=>{}};
+  helpNeeded: {value:boolean,toggle:()=>void};
 };
 
 export function App() {
-  const {} = useMantineTheme();
   //to change theme i wil use a mantine hook
   const {colorScheme,toggleColorScheme} = useMantineColorScheme();
   const [opened, { toggle }] = useDisclosure(false);
   const loc = useLocation();
 
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   
-  let location = useLocation();
+  const location = useLocation();
   useEffect(() => {
     if(location.pathname=='/'){
       navigate('/home')
     }
-  }, [location]);
-
+  }, [location,navigate]);
 
   return (
     <AppShell
@@ -60,6 +53,7 @@ export function App() {
           </Box>
 
           <Title>Medisim <Text span size='sm'>gr</Text></Title>
+          
 
           <Group ml={'auto'}>
             {!loc.pathname.includes("/home") &&

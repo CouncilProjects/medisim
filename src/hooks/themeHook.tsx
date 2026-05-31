@@ -7,7 +7,7 @@ export function useThemeColor(lightColor:string, darkColor:string) {
     return colorScheme === "dark" ? darkColor : lightColor;
 }
 
-export function useThemeDepends(lightContent:any, darkContent:any) {
+export function useThemeDepends<T>(lightContent:T, darkContent:T) {
     const { colorScheme } = useMantineColorScheme();
 
     return colorScheme === "dark" ? darkContent : lightContent;

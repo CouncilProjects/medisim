@@ -1,5 +1,5 @@
-import { Box,Button,Group,Image, Kbd, Tooltip } from "@mantine/core"
-import { useDisclosure, useHotkeys, useViewportSize } from "@mantine/hooks"
+import { Box,Button,Image, Tooltip } from "@mantine/core"
+import { useDisclosure, useHotkeys } from "@mantine/hooks"
 import { useEffect, useRef, useState } from "react"
 
 
@@ -7,8 +7,8 @@ type Hotspot={
     x:number,
     y:number,
     w:number,
-    h:number
-    content:any
+    h:number,
+    content:string|null,
     onClick:()=>void
 }
 

@@ -1,13 +1,7 @@
-import { ThemeIcon } from "@mantine/core";
 import type { AppEvents } from "./events";
 
 //for more info on event busses. 
 //https://dev.to/mohsenfallahnjd/javascript-event-bus-js-typescript-17jp
-
-type eventCallback<K> = {
-    callback: (K)=>void,
-    id:number
-}
 
 type EventCallback<T> = (params: T) => void;
 
@@ -28,15 +22,16 @@ class EventBusClass{
         }
         const id = this.callBackId++;
 
-        this.eventMap[event].push({callback,id});
+        (this.eventMap[event] as {callback:EventCallback<AppEvents[K]>,id:number}[]).push({callback,id});
 
         console.log("Event registered for " + event);
 
         return ()=>{this.removeCallback(event,id)}
     }
 
-    private removeCallback(event,id){
-        var list = this.eventMap[event];
+    private removeCallback<K extends keyof AppEvents>(event:K,id:number){
+        const list = this.eventMap[event];
+        // @ts-expect-error eventMap index write is intentionally unsafe
         this.eventMap[event]=list.filter(call=>call.id!=id);
     }
 
@@ -46,7 +41,7 @@ class EventBusClass{
             return;
         }
         
-        this.eventMap[event].forEach(callback=>{
+        this.eventMap[event]?.forEach(callback=>{
             callback.callback(params);
         })
     }

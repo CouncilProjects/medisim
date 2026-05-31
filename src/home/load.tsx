@@ -1,4 +1,4 @@
-import { Button, Card, Combobox, Fieldset, FileInput, Input, InputBase, Modal, Select, Stack, Switch, Text, TextInput, useCombobox } from "@mantine/core";
+import { Button, Card, Fieldset, FileInput, Modal, Select, Stack, Switch, Text, TextInput, useCombobox } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useState } from "react";
 import { preLoadScenarios } from "./preloadedScenarios";
@@ -72,7 +72,7 @@ export default function LoadScenario({ closeFun}:{closeFun:()=>void}) {
         e.preventDefault();
         
         
-        let data:FormData = new FormData(e.currentTarget);
+        const data:FormData = new FormData(e.currentTarget);
 
         console.log(data);
 
@@ -81,7 +81,7 @@ export default function LoadScenario({ closeFun}:{closeFun:()=>void}) {
             return;
         }
 
-        let id = "";
+        let id;
 
         
 
@@ -103,7 +103,7 @@ export default function LoadScenario({ closeFun}:{closeFun:()=>void}) {
                 return;
             }
             
-            let scenPicked = structuredClone(preLoadScenarios[preselected - 1]);
+            const scenPicked = structuredClone(preLoadScenarios[preselected - 1]);
             scenPicked.username=data.get("nameIn") as string;
             scenPicked.uuid = crypto.randomUUID();
             id = addScenario(scenPicked);
@@ -139,21 +139,21 @@ export default function LoadScenario({ closeFun}:{closeFun:()=>void}) {
                 }
             )
             setError(validated.error||"Bad");
-            return;
+            return "";
         }
 
         js.username = name
         return addScenario(js);
     }
 
-    const [scenarios, setScenarios] = useLocalStorage<Scenario[]>({
+    const [, setScenarios] = useLocalStorage<Scenario[]>({
         key: 'medisim-ongoing-scenarios',
         defaultValue: [],
     });
 
     const addScenario = (scen: Scenario) => {
         setScenarios((prev) => [...prev, scen]);
-        return scen.uuid;
+        return scen.uuid || "bad";
     };
 
 

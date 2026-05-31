@@ -1,15 +1,11 @@
-import { useNavigate, useParams } from "react-router"
+import { useNavigate } from "react-router"
 import { makeHotspot, OverlayImage } from "../common/overlayHotspot"
 import eventBus from "../common/eventBus";
 import { Actions } from "../engine/schemas/actionEnum";
-import { Box, Group, Kbd } from "@mantine/core";
-import { useEffect } from "react";
-import { notifications } from "@mantine/notifications";
 
 
 export function OverlayImageMenu(){
-    let params = useParams();
-    let nav = useNavigate();
+    const nav = useNavigate();
 
     return(
         <OverlayImage src='/workspace.png'
