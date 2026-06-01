@@ -11,7 +11,7 @@ export function OverlayImageMenu(){
         <OverlayImage src='/workspace.png'
             hotspots={
                 [
-                    makeHotspot(0.25, 0.28, (() => { nav("vitals") }), "Vitals", 215, 175),
+                    makeHotspot(0.25, 0.28, (() => { nav("vitals")}), "Vitals", 215, 175),
                     makeHotspot(0.22, 0.70, (() => { nav("info") }), "Patient info", 150, 190),
                     makeHotspot(0.76, 0.35, (() => { nav("ventilation") }), "Ventilation", 180, 180),
                     makeHotspot(0.90, 0.65, (() => { nav("cabinet") }), "Medicine cabinet", 240, 400),

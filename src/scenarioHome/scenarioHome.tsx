@@ -24,13 +24,14 @@ export function ScenarioHome(){
     const nav = useNavigate();
     const [scenarios,setScenarios] = useLocalStorage<Scenario[]>({key:"medisim-ongoing-scenarios",defaultValue:[]});
     const workingScenario = scenarios.find(scen => scen.uuid === params.scenarioId);
+    const latestScenario = useRef(null);
 
     useHotkeys([
-        ['1',()=>{nav("vitals")}],
-        ['2', () => { nav("cabinet") }],
-        ['3', () => { nav("info") }],
-        ['4', () => { nav("ventilation") }],
-        ['d', () => { eventBus.emit("buttonPressed",{action:Actions.callDoctor}) }]
+        ['1', () => { nav("vitals", { replace: true }) }],
+        ['2', () => { nav("cabinet", { replace: true }) }],
+        ['3', () => { nav("info", { replace: true }) }],
+        ['4', () => { nav("ventilation", { replace: true }) }],
+        ['d', () => { eventBus.emit("buttonPressed", { action: Actions.callDoctor }) }]
     ]);
 
 
@@ -50,6 +51,7 @@ export function ScenarioHome(){
     function actionHandle(action:Action) {
         knownAction.current=true;
         const changed = engine.actionHappend(action);
+        latestScenario.current = changed;
         if(changed==null) return;
         
         setScenarios((prev)=>{
@@ -92,20 +94,12 @@ export function ScenarioHome(){
         const unsub3 = eventBus.on("buttonPressed",({action})=>{actionHandle(action);});
 
         const unsub4 = eventBus.on("end", () => {
-            notifications.show(
-                {
-                    title: "Scenario finished !",
-                    message: "Good job !! ",
-                    autoClose: 4000,
-                    color: 'blue',
-                    position: 'top-center'
-                }
-            );
+            
             setScenarios((prev)=>{
                 if(prev.length==0) return [];
                 return prev.filter(val=>val.uuid!==params.scenarioId);
             });
-            nav("/home");
+            nav("/report",{state:{scenario:latestScenario.current},replace:true});
         });
 
         return ()=>{

@@ -1,6 +1,7 @@
 import eventBus from "../common/eventBus";
+import type { Debrief, NodeTimelineSnapshot } from "../scenarioHome/endScreen/EndScreen";
 import type { Action } from "./schemas/actionEnum";
-import { type Scenario,type Node, type Effect } from "./types";
+import { type Scenario,type Node, type Effect, type Option } from "./types";
 
 export class Engine{
     scenario!:Scenario
@@ -77,6 +78,7 @@ export class Engine{
 
     public actionHappend(action:Action) : Scenario|null{
         if(!this.scenario) return null;
+        this.scenario.actionsTaken.push(action);
         const node:Node = this.getCurrentNode()
         if(node.options == null){
             return null;
@@ -107,6 +109,72 @@ export class Engine{
         }
         
         return arr;
+    }
+
+    public getDebrief(scen:Scenario) : Debrief{
+        let good:number = 0;
+        let bad:number = 0;
+        let debrief:Debrief = {
+            scenarioName:scen.title,
+            goodPercent:0.0,
+            taker:scen.username,
+            score:scen.state.score,
+            timeline:[]
+        }
+
+        scen.current_node=0;
+        let nodeTimeline:NodeTimelineSnapshot={
+            duringNode:scen.nodes[scen.current_node].id,
+            nodeText:scen.nodes[scen.current_node].text,
+            nodeTimeline:[]
+        }
+
+        let foundValid=false;
+
+        console.log(scen.actionsTaken);
+
+        for(let action of scen.actionsTaken){
+            let foundValid = false;
+            const optionPool = scen.nodes[scen.current_node].options
+            for(let option of optionPool){
+                if(option.action==action){
+                    good++;
+                    foundValid=true;
+
+                    nodeTimeline.nodeTimeline.push({action:action,valid:true,scoreDelta:option.effects.find(ef=>ef.type=="score").value})
+                    
+                    debrief.timeline.push(nodeTimeline);
+
+                    let nextNode = option.effects.find(eff => eff.type == "next_node")?.node_id
+                    
+                    if(nextNode==null || nextNode==undefined){
+                        break;
+                    }
+                    
+                    scen.current_node = scen.nodes.findIndex(node=>node.id==nextNode)
+                    
+                    
+                    nodeTimeline = {
+                        duringNode: scen.nodes[scen.current_node].id,
+                        nodeText: scen.nodes[scen.current_node].text,
+                        nodeTimeline: []
+                    }
+                    break;
+                }
+            }
+            if(! foundValid){
+                bad++;
+                nodeTimeline.nodeTimeline.push({ action: action, valid: false, scoreDelta: -5 });
+            }
+            
+        }
+
+        const percent = (good/(good+bad))*100.0
+        debrief.goodPercent = percent;
+
+        console.table(debrief)
+
+        return debrief
     }
 
     testGetInfo(){

@@ -47,4 +47,5 @@ export type Scenario = {
     current_node: number;
     state: State;
     nodes: Node[];
+    actionsTaken:Action[];
 };
