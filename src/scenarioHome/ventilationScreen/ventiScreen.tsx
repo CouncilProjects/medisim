@@ -23,19 +23,19 @@ export default function VentilationScreen() {
                 <Text fw={300} size="md" bg={spo2Flash?'orange':'transparent'}>SPo2 : {context.vitals.spo2.value} currently {context.vitals.spo2.state}</Text>
                 <Text fw={300} size="md" bg={rrFlash ? 'orange' : 'transparent'}>Respitory rate : {context.vitals.rr.value} currently {context.vitals.rr.state}</Text>
                 <Group grow>
-                    <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.oxygenDensityUp })}>
+                    <Button onClick={() => eventBus.emit("buttonPressed", { action: "oxygenDensityUp" })}>
                         Oxygen Density Up
                     </Button>
-                    <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.oxygenDensityDown })}>
+                    <Button onClick={() => eventBus.emit("buttonPressed", { action: "oxygenDensityDown" })}>
                         Oxygen Density Down
                     </Button>
                 </Group>
 
                 <Group grow>
-                    <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.oxyPumpsUp })}>
+                    <Button onClick={() => eventBus.emit("buttonPressed", { action: "oxyPumpsUp" })}>
                         Oxy Pumps Up
                     </Button>
-                    <Button onClick={() => eventBus.emit("buttonPressed", { action: Actions.oxyPumpsDown })}>
+                    <Button onClick={() => eventBus.emit("buttonPressed", { action: "oxyPumpsDown" })}>
                         Oxy Pumps Down
                     </Button>
                 </Group>

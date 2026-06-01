@@ -1,3 +1,4 @@
+import { Actions } from "../engine/schemas/actionEnum"
 import { type Scenario } from "../engine/types"
 
 export const preLoadScenarios:Scenario[] = [
@@ -67,7 +68,7 @@ export const preLoadScenarios:Scenario[] = [
                 options: [
                     {
                         label: "Activate cath lab",
-                        action:'bloodPressureUp',
+                        action:"oxyPumpsUp",
                         effects: [
                             {
                                 type: "score",
@@ -122,6 +123,7 @@ export const preLoadScenarios:Scenario[] = [
                     }
                 ]
             }
-        ]
+        ],
+        actionsTaken:[],
     }
 ]

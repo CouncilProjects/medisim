@@ -7,7 +7,7 @@ import { type Scenario, type Vitals } from "../engine/types";
 import engine from "../engine/engine";
 import eventBus from "../common/eventBus";
 import { Outlet } from "react-router";
-import { Actions, type Action } from "../engine/schemas/actionEnum";
+import { Actions, type Action, type ActionKey } from "../engine/schemas/actionEnum";
 import { useAppContext } from "../App";
 import { OnLineHelp, type PageHelp } from "../common/onlineHelp";
 
@@ -24,13 +24,14 @@ export function ScenarioHome(){
     const nav = useNavigate();
     const [scenarios,setScenarios] = useLocalStorage<Scenario[]>({key:"medisim-ongoing-scenarios",defaultValue:[]});
     const workingScenario = scenarios.find(scen => scen.uuid === params.scenarioId);
+    const latestScenario = useRef<Scenario|null>(null);
 
     useHotkeys([
-        ['1',()=>{nav("vitals")}],
+        ['1', () => { nav("vitals") }],
         ['2', () => { nav("cabinet") }],
         ['3', () => { nav("info") }],
         ['4', () => { nav("ventilation") }],
-        ['d', () => { eventBus.emit("buttonPressed",{action:Actions.callDoctor}) }]
+        ['d', () => { eventBus.emit("buttonPressed", { action: "callDoctor" }) }]
     ]);
 
 
@@ -47,9 +48,10 @@ export function ScenarioHome(){
     },[]);
 
 
-    function actionHandle(action:Action) {
+    function actionHandle(action:ActionKey) {
         knownAction.current=true;
         const changed = engine.actionHappend(action);
+        latestScenario.current = changed;
         if(changed==null) return;
         
         setScenarios((prev)=>{
@@ -92,20 +94,12 @@ export function ScenarioHome(){
         const unsub3 = eventBus.on("buttonPressed",({action})=>{actionHandle(action);});
 
         const unsub4 = eventBus.on("end", () => {
-            notifications.show(
-                {
-                    title: "Scenario finished !",
-                    message: "Good job !! ",
-                    autoClose: 4000,
-                    color: 'blue',
-                    position: 'top-center'
-                }
-            );
+            
             setScenarios((prev)=>{
                 if(prev.length==0) return [];
                 return prev.filter(val=>val.uuid!==params.scenarioId);
             });
-            nav("/home");
+            nav("/report",{state:{scenario:latestScenario.current},replace:true});
         });
 
         return ()=>{
@@ -120,7 +114,6 @@ export function ScenarioHome(){
     
     
     useEffect(() => {
-        console.log("Done :" +knownAction);
         if (!workingScenario) return;
 
         if(knownAction.current){
@@ -130,11 +123,6 @@ export function ScenarioHome(){
 
         const copy = structuredClone(workingScenario);
         engine.setScenario(copy);
-        
-        
-        return () => {
-            console.log("Ending effect deregistering eventbus");
-        };
     }, [params.scenarioId,workingScenario]);
 
     if(!workingScenario){
