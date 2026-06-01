@@ -3,8 +3,10 @@ import { type Scenario } from "../engine/types"
 export const preLoadScenarios:Scenario[] = [
     {
         id: "scn_001",
+        UUID: "",
         title: "Acute Chest Pain Case",
         current_node: 0,
+        actions_taken: [],
         state: {
             score: 0,
             vitals: {

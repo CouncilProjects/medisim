@@ -1,4 +1,5 @@
 export const conditionSchema = {
+    $id: "condition",
     type: "object",
     additionalProperties: {
         type:"object",
