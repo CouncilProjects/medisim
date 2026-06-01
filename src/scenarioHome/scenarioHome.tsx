@@ -1,4 +1,4 @@
-import { Box, Group, Kbd, Loader, useMantineTheme,Text } from "@mantine/core";
+import { Box, Group, Kbd, Loader, useMantineTheme,Text, Modal } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useEffect, useRef } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router";
@@ -8,6 +8,8 @@ import engine from "../engine/engine";
 import eventBus from "../common/eventBus";
 import { Outlet } from "react-router";
 import type { Action } from "../engine/schemas/actionEnum";
+import { useAppContext } from "../App";
+import { OnLineHelp, type PageHelp } from "../common/onlineHelp";
 
 type ScenarioOutletContext = {
     vitals: Vitals;
@@ -16,7 +18,7 @@ type ScenarioOutletContext = {
 
 export function ScenarioHome(){
     const theme = useMantineTheme();
-
+    const { helpNeeded } = useAppContext();
     const knownAction = useRef(false);
     const params = useParams();
     const nav = useNavigate();
@@ -149,6 +151,9 @@ export function ScenarioHome(){
                 backgroundAttachment: "fixed"  // Optional: keeps background static while content scrolls
             }}>
             <Outlet context={workingScenario ? scenarioOutletContext : null}></Outlet>
+            <Modal opened={helpNeeded.value} onClose={helpNeeded.toggle} title="On-line help">
+                    <OnLineHelp pageHelp={onlineHelp}></OnLineHelp>
+            </Modal>
         </Box>
     )
 }
@@ -173,4 +178,43 @@ function Shortcut({ symbolA, symbolB, description }: { symbolA: string; symbolB:
             </Box>
         </Group>
     );
+}
+
+
+const onlineHelp:PageHelp={
+    pageTitle:"Scenario home",
+    activeSections:[
+        {
+            title:"Vitals",
+            steps:[
+                {
+                    stepContent:"In vitals you can find ..."
+                }
+            ]
+        },
+        {
+            title:"Cabinet",
+            steps:[
+                {
+                    stepContent:"In cabinet you can find ..."
+                }
+            ]
+        },
+        {
+            title: "Ventilator",
+            steps: [
+                {
+                    stepContent: "In ventilator you can find ..."
+                }
+            ]
+        },
+        {
+            title: "Patient info",
+            steps: [
+                {
+                    stepContent: "In patient info you can find ..."
+                }
+            ]
+        }
+    ]
 }

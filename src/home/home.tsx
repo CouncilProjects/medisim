@@ -1,7 +1,7 @@
 import { Box, Button, Card, Center, Modal, Stack,Switch,Text,Title } from "@mantine/core";
 import { useDisclosure, useLocalStorage } from "@mantine/hooks";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { type OutletContextType } from "../App";
+import { useAppContext, type OutletContextType } from "../App";
 import { OnLineHelp, type PageHelp } from "../common/onlineHelp";
 import LoadScenario from "./load";
 import type { Scenario } from "../engine/types";
@@ -77,7 +77,7 @@ export default function Home(){
 
     const [resumePanel,resumePanelHandlers] = useDisclosure(false);
     const [loadPanel, loadPanelHandlers] = useDisclosure(false);
-    const { helpNeeded } = useOutletContext<OutletContextType>();
+    const { helpNeeded } = useAppContext();
     console.log(helpNeeded);
     const [checkedDelete, setCheckedDelete] = useState(false);
 

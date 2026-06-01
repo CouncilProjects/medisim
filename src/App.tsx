@@ -15,13 +15,17 @@ import {
 
 
 import { IconSun,IconMoon,IconHelp,IconArrowBack } from '@tabler/icons-react';
-import { Outlet, useLocation, useNavigate } from 'react-router';
+import { Outlet, useLocation, useNavigate, useOutletContext } from 'react-router';
 import { useDisclosure } from '@mantine/hooks';
 import { useThemeDepends } from './hooks/themeHook';
 
 export type OutletContextType = {
   helpNeeded: {value:boolean,toggle:()=>void};
 };
+
+export function useAppContext(){
+  return useOutletContext<OutletContextType>();
+}
 
 export function App() {
   //to change theme i wil use a mantine hook
