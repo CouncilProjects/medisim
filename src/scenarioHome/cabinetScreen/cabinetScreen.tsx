@@ -1,5 +1,5 @@
 import React from 'react';
-import { Stack, Group, Button, Text, Divider, Center } from '@mantine/core';
+import { Stack, Group, Button, Text, Divider, Center, rgba } from '@mantine/core';
 import { Actions } from '../../engine/schemas/actionEnum';
 import eventBus from '../../common/eventBus';
 import { useClickOutside } from '@mantine/hooks';
@@ -10,7 +10,7 @@ export default function CabinetScreen() {
     const ref = useClickOutside(() => nav(-1));
 
     return (
-        <Center w={'100%'} h={'100%'}>
+        <Center w="100%"  h="100%" bg={rgba('dark',0.6)}>
             <Stack ref={ref} bg={'dark'} p={4} gap="md">
                 <Text fw={700} size="lg">Medicine Cabinet & Procedures</Text>
 

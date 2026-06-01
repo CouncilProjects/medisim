@@ -1,28 +1,30 @@
-import React, { useState } from 'react';
+import { Center, rgba, Stack,Text } from '@mantine/core';
+import { useClickOutside } from '@mantine/hooks';
+import { useEffect } from 'react';
+import { useNavigate} from 'react-router-dom';
+import { useScenarioContext } from '../scenarioHome';
 
 export default function InfoScreen() {
-    // Initialize the counter state at 0
-    const [count, setCount] = useState(0);
-
-    // Inline styles for the red button
-    const buttonStyle = {
-        backgroundColor: '#ff4d4d',
-        color: 'white',
-        border: 'none',
-        padding: '10px 20px',
-        fontSize: '16px',
-        borderRadius: '5px',
-        cursor: 'pointer',
-        fontWeight: 'bold',
-        transition: 'background 0.2s ease',
-    };
+    const nav = useNavigate();
+    const ref = useClickOutside(() => nav(-1));
+    const outletContext = useScenarioContext();
+    
+    useEffect(()=>{
+        console.log(outletContext.getMedicalSituation());
+    },[]);
 
     return (
-        <button
-            style={buttonStyle}
-            onClick={() => setCount(count + 1)}
-        >
-            Clicks: {count} Info
-        </button>
+        <Center w="100%" h="100%" bg={rgba('dark', 0.6)}>
+            <Stack ref={ref} bg={'dark'} p={4} gap="md">
+                <Text fw={700} size="lg">Patient Info</Text>
+                
+                {
+                    outletContext.getMedicalSituation().map((event,index)=>{
+                        return <Text fw={index==0?600:300}>{index==0?"Current event -> ":null}{event}</Text>
+                    })
+                }
+                
+            </Stack>
+        </Center>
     );
 }

@@ -94,6 +94,21 @@ export class Engine{
         return this.scenario;
     }
 
+    public getEventsTillCurrent() : string[]{
+        if(this.scenario==null){ 
+            console.log("No scenario");
+            return [];
+        }
+
+        //will need to decide on a path keeping strategy for now we bring them all
+        const arr = [];
+        for(let i=this.scenario.current_node;i>=0;i--){
+            arr.push(this.scenario.nodes[i].text);
+        }
+        
+        return arr;
+    }
+
     testGetInfo(){
         console.log("Score: "+this.scenario.state.score);
         const node = this.getCurrentNodeInfo();

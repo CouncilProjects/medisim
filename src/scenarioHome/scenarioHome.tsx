@@ -1,13 +1,18 @@
 import { Box, Group, Kbd, Loader, useMantineTheme,Text } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useEffect, useRef } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useOutletContext, useParams } from "react-router";
 import { useLocalStorage } from "@mantine/hooks";
-import { type Scenario } from "../engine/types";
+import { type Scenario, type Vitals } from "../engine/types";
 import engine from "../engine/engine";
 import eventBus from "../common/eventBus";
 import { Outlet } from "react-router";
 import type { Action } from "../engine/schemas/actionEnum";
+
+type ScenarioOutletContext = {
+    vitals: Vitals;
+    getMedicalSituation: (() => string[]);
+}
 
 export function ScenarioHome(){
     const theme = useMantineTheme();
@@ -100,6 +105,7 @@ export function ScenarioHome(){
         }
     }, []);
 
+
     
     
     useEffect(() => {
@@ -113,7 +119,7 @@ export function ScenarioHome(){
 
         const copy = structuredClone(workingScenario);
         engine.setScenario(copy);
-
+        
         
         return () => {
             console.log("Ending effect deregistering eventbus");
@@ -123,6 +129,14 @@ export function ScenarioHome(){
     if(!workingScenario){
         return <Loader></Loader>
     }
+
+
+
+    // 3. Compute the context synchronously on every render
+    const scenarioOutletContext: ScenarioOutletContext = {
+        vitals: workingScenario.state.vitals,
+        getMedicalSituation: ()=>{ return engine.getEventsTillCurrent()}
+    };
     
 
     return(
@@ -134,9 +148,13 @@ export function ScenarioHome(){
                 backgroundRepeat: "no-repeat", // Prevents tiling
                 backgroundAttachment: "fixed"  // Optional: keeps background static while content scrolls
             }}>
-            <Outlet context={workingScenario ? workingScenario.state.vitals : null}></Outlet>
+            <Outlet context={workingScenario ? scenarioOutletContext : null}></Outlet>
         </Box>
     )
+}
+
+export function useScenarioContext(){
+    return useOutletContext<ScenarioOutletContext>();
 }
 
 function Shortcut({ symbolA, symbolB, description }: { symbolA: string; symbolB: string; description: string }) {
