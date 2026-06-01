@@ -2,12 +2,12 @@ import { Box, Group, Kbd, Loader, useMantineTheme,Text, Modal } from "@mantine/c
 import { notifications } from "@mantine/notifications";
 import { useEffect, useRef } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router";
-import { useLocalStorage } from "@mantine/hooks";
+import { useHotkeys, useLocalStorage } from "@mantine/hooks";
 import { type Scenario, type Vitals } from "../engine/types";
 import engine from "../engine/engine";
 import eventBus from "../common/eventBus";
 import { Outlet } from "react-router";
-import type { Action } from "../engine/schemas/actionEnum";
+import { Actions, type Action } from "../engine/schemas/actionEnum";
 import { useAppContext } from "../App";
 import { OnLineHelp, type PageHelp } from "../common/onlineHelp";
 
@@ -24,6 +24,14 @@ export function ScenarioHome(){
     const nav = useNavigate();
     const [scenarios,setScenarios] = useLocalStorage<Scenario[]>({key:"medisim-ongoing-scenarios",defaultValue:[]});
     const workingScenario = scenarios.find(scen => scen.uuid === params.scenarioId);
+
+    useHotkeys([
+        ['1',()=>{nav("vitals")}],
+        ['2', () => { nav("cabinet") }],
+        ['3', () => { nav("info") }],
+        ['4', () => { nav("ventilation") }],
+        ['d', () => { eventBus.emit("buttonPressed",{action:Actions.callDoctor}) }]
+    ]);
 
 
     //notify of hint
@@ -67,6 +75,7 @@ export function ScenarioHome(){
             }
             
         });
+
 
         const unsub2 = eventBus.on("movedToNewNode", ({ nodeTitle }) => {
                 notifications.show(
@@ -150,7 +159,9 @@ export function ScenarioHome(){
                 backgroundRepeat: "no-repeat", // Prevents tiling
                 backgroundAttachment: "fixed"  // Optional: keeps background static while content scrolls
             }}>
+
             <Outlet context={workingScenario ? scenarioOutletContext : null}></Outlet>
+
             <Modal opened={helpNeeded.value} onClose={helpNeeded.toggle} title="On-line help">
                     <OnLineHelp pageHelp={onlineHelp}></OnLineHelp>
             </Modal>
