@@ -1,58 +1,62 @@
-import { useEffect, useState } from "react"
-import type { Scenario } from "../../engine/types"
-import { Accordion, Box, Button, Card,Center,Collapse,Divider,Group,Image,List,NumberFormatter,rgba,Stack,Text, Timeline, TimelineItem } from "@mantine/core";
+import { useEffect } from "react"
+import { Accordion, Box, Button, Card,Center,Divider,Group,Image,List,Loader,Modal,NumberFormatter,rgba,Stack,Text, Timeline, TimelineItem } from "@mantine/core";
 import type { Action } from "../../engine/schemas/actionEnum";
 import { useLocation, useNavigate } from "react-router";
 import engine from "../../engine/engine";
+import { jsPDF } from "jspdf";
+import { OnLineHelp, type PageHelp } from "../../common/onlineHelp";
+import { useAppContext } from "../../App";
 
-
-type EndScreenProps={
-    scenario:Scenario
-}
 
 export function EndScreen(){
     const location = useLocation();
-    const [done,setDone] = useState(false);
     const navigate = useNavigate();
-
-    console.log(location.state);
-
-    useEffect(() => {
-        const handlePopState = () => {
-            navigate("/", { replace: true });
-        };
-
-        window.addEventListener("popstate", handlePopState);
-
-        return () => {
-            window.removeEventListener("popstate", handlePopState);
-        };
-    }, [navigate]);
+    const { helpNeeded } = useAppContext();
+   
+    const scen = location.state?.scenario;
 
     useEffect(()=>{
-        window.addEventListener('beforeunload', (event) => {
-            // Most browsers require you to set preventDefault and a return value
+        if(scen==undefined){
+            navigate("/home", { replace: true });
+        }
+    },[scen]);
+
+    const debrif = scen ? engine.getDebrief(scen) : null;
+
+    useEffect(() => {
+        window.history.pushState(null, '', window.location.href);
+
+        const handlePop = () => {
+            navigate('/home', { replace: true });
+        };
+
+        window.addEventListener('popstate', handlePop);
+        return () => window.removeEventListener('popstate', handlePop);
+    }, [navigate]);
+
+    useEffect(() => {
+        // @ts-ignore
+        const handleBeforeUnload = (event) => {
             event.preventDefault();
-            event.returnValue = 'Are you sure you want to leave?';
-        });
-    },[]);
+            // Some browsers require returnValue for the dialog to show
+            event.returnValue = "";
+        };
 
-    const debrif:Debrief = engine.getDebrief(location.state.scenario);
+        window.addEventListener("beforeunload", handleBeforeUnload);
 
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    }, []);
 
-    /*if(!done){
-        return <Card>
-            <Text fw={1000} variant="text">Creating debrefing and report wait and dont refresh...</Text>
-        </Card>
-    }*/
 
     // Source - https://stackoverflow.com/a/49917066
     // Posted by Stefanos Chrs, modified by community. See post 'Timeline' for change history
     // Retrieved 2026-06-01, License - CC BY-SA 4.0
 
-    function download() {
+    function downloadJSON() {
         const data = new Blob([JSON.stringify(debrif)], { type:'application/json'});
-        let date = new Date().toJSON();
+        const date = new Date().toJSON();
         const name = "medisim-Report-"+date+".json"
 
         const url = URL.createObjectURL(data);
@@ -65,12 +69,103 @@ export function EndScreen(){
         document.body.removeChild(a)
     }
 
+    function downloadPDF() {
+        const doc = new jsPDF();
+        const date = new Date().toJSON();
+
+        const now = new Date();
+        const dateTOprint = 
+            now.getFullYear() + "-" +
+            String(now.getMonth() + 1).padStart(2, "0") + "-" +
+            String(now.getDate()).padStart(2, "0") + " " +
+            String(now.getHours()).padStart(2, "0") + "-" +
+            String(now.getMinutes()).padStart(2, "0");
+
+        const name = "medisim-Report-" + date + ".pdf"
+        let i = 10;
+        const pageHeight = doc.internal.pageSize.height;
+
+        const defaultOption:defOptions = {
+            fontSize : 10,
+            color :[0, 0, 0],
+            lineHeightTimes : 0.5,
+        }
+
+        type defOptions = {
+            fontSize?:number,
+            color?:[number,number,number],
+            lineHeightTimes?:number
+        }
+
+        function addWrapped(text:string, x:number, options:defOptions = defaultOption) {
+            const {
+                fontSize = 10,
+                color = [0, 0, 0] as [number,number,number],
+                lineHeightTimes = 0.5,
+            } = options;
+
+            doc.setFontSize(fontSize);
+            
+            doc.setTextColor(...color);
+
+            const lineHeight = fontSize * lineHeightTimes;
+            const lines = doc.splitTextToSize(text, 170);
+
+            for (const line of lines) {
+                if (i > pageHeight - 20) {
+                    doc.addPage();
+                    i = 20;
+                }
+
+                doc.text(line, x, i);
+                i += lineHeight;
+            }
+
+            // reset (important so styling doesn't leak)
+            doc.setTextColor(0, 0, 0);
+        }
+
+        addWrapped(debrif.scenarioName,10,{fontSize:15,lineHeightTimes:1});
+        
+        addWrapped(`Taken by: ${debrif.taker} Score: ${debrif.score}`, 15);
+        addWrapped(`Accuracy: ${debrif.goodPercent}%`, 15);
+        addWrapped(`Finished at : `+dateTOprint,10,{color:[130,100,200]})
+        for (const nodeLine of debrif.timeline) {
+            addWrapped(nodeLine.duringNode+":\" " + nodeLine.nodeText+"\"" , 20);
+            
+            for (const act of nodeLine.nodeTimeline) {
+                if(act.valid){
+                    doc.setTextColor(0, 255, 0);
+                } else {
+                    doc.setTextColor(255, 0, 0);
+                }
+                addWrapped(
+                    `• [${act.action}] Affected score by: ${act.scoreDelta}`,
+                    25,
+                    {color:act.valid?[20,200,30]:[200,30,20]}
+                );
+                doc.setTextColor(0, 0, 0);
+            }
+        }
+        
+
+        
+        doc.save(name);
+    }
+
+    if(debrif==null){
+        return <Loader></Loader>
+    }
 
     return <Center w={'100%'} h={'100%'} bg={rgba('red',0.6)}>
         <Card p={12} m={4}>
             <Group justify="space-between">
                 <Text fw={1000}>Your report</Text>
-                <Button leftSection={<Image src={"/download.svg"} w={32} h={32}></Image>} onClick={()=>{download()}}>Download</Button>
+                
+                <Stack>
+                    <Button leftSection={<Image src={"/download.svg"} w={32} h={32}></Image>} onClick={() => { downloadJSON() }}>Download .json</Button>
+                    <Button leftSection={<Image src={"/download.svg"} w={32} h={32}></Image>} onClick={() => { downloadPDF() }}>Download .pdf</Button>
+                </Stack>
             </Group>
             <Stack>
                 <Text>Scenario : {debrif.scenarioName}</Text>
@@ -95,7 +190,7 @@ export function EndScreen(){
                                                 <List>
                                                     {
                                                         nodeLine.nodeTimeline.map(act => {
-                                                            return <List.Item><Text>{act.valid ? '✅' : '❌'} {act.action} cause score to change by {act.scoreDelta}</Text></List.Item>
+                                                            return <List.Item><Text>{act.valid ? '✅' : '❌'} [{act.action}] caused score to change by {act.scoreDelta}</Text></List.Item>
                                                         })
                                                     }
                                                 </List>
@@ -111,33 +206,13 @@ export function EndScreen(){
                 </Timeline>
             </Box>
         </Card>
+         <Modal opened={helpNeeded.value} onClose={helpNeeded.toggle} title="On-line help">
+            <OnLineHelp pageHelp={onlineHelp}></OnLineHelp>
+        </Modal>
     </Center>
 
 
 }
-
-
-/**
- * <Stack>
-                {
-                    debrif.timeline.map(nodeTimeline=>{
-                        return(
-                            <Stack>
-                                <Group>For node: {nodeTimeline.duringNode} total actions : {nodeTimeline.nodeTimeline.length}</Group>
-                                {
-                                    nodeTimeline.nodeTimeline.map(actionSnapshot => {
-                                        return (
-                                            <Text>{actionSnapshot.valid ?'✅':'❌'} {actionSnapshot.action} cause score to change by {actionSnapshot.scoreDelta}</Text>
-                                        )
-                                    })
-                                }
-                                <Divider></Divider>
-                            </Stack>
-                        );
-                    })
-                }
-            </Stack>
- */
 
 export type Debrief ={
     taker:string,
@@ -161,5 +236,29 @@ export type ActionSnapshot = {
     scoreDelta:number
 }
 
+const onlineHelp:PageHelp = {
+    pageTitle:"Report page",
+    activeSections:[
+        {
+            title:"Timeline",
+            steps:[
+                {stepContent:"The timeline shows what path was taken"},
+                {stepContent:"Pressing on 'detailes' brings up the actions taken and how they affected the score"}
+            ]
+        },
+        {
+            title: ".json download",
+            steps: [
+                { stepContent: "Download the report in json format" },
+            ]
+        },
+        {
+            title: ".pdf download",
+            steps: [
+                { stepContent: "Download the report in pdf format" },
+            ]
+        }
+    ]
+}
 
 

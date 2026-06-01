@@ -1,41 +1,41 @@
 export const Actions = {
-    //vitals
-    shockLight: "shockLight",
-    shock: "shock",
+    // vitals
+    shockLight: "Applied light shock",
+    shock: "Applied shock",
 
+    // ventilator
+    oxygenDensityUp: "Increased oxygen density",
+    oxygenDensityDown: "Decreased oxygen density",
 
-    //ventilator
-    oxygenDensityUp: "oxygenDensityUp",
-    oxygenDensityDown: "oxygenDensityDown",
+    oxyPumpsUp: "Increased oxygen pump rate",
+    oxyPumpsDown: "Decreased oxygen pump rate",
 
-    oxyPumpsUp: "oxyPumpsUp",
-    oxyPumpsDown: "oxyPumpsDown",
+    // medicine cabinet
+    painkillers: "Administered painkillers",
+    painkillersLight: "Administered light painkillers",
 
-    //medicine cabinet
-    painkillers: "painkillers",
-    painkillersLight: "painkillersLight",
+    bloodPressureUp: "Increased blood pressure",
+    bloodPressureDown: "Decreased blood pressure",
+    bloodPressureUpLight: "Slightly increased blood pressure",
+    bloodPressureDownLight: "Slightly decreased blood pressure",
 
-    bloodPressureUp: "bloodPressureUp",
-    bloodPressureDown: "bloodPressureDown",
-    bloodPressureUpLight: "bloodPressureUpLight",
-    bloodPressureDownLight: "bloodPressureDownLight",
+    tempUp: "Increased body temperature",
+    tempDown: "Decreased body temperature",
+    tempUpLight: "Slight increase in body temperature",
+    tempDownLight: "Slight decrease in body temperature",
 
-    tempUp: "tempUp",
-    tempDown: "tempDown",
-    tempUpLight: "tempUpLight",
-    tempDownLight: "tempDownLight",
+    callDoctor: "Called doctor",
 
-    
-    callDoctor:"callDoctor",
-    
-    doTests:"doTests",
-    //patient info
-    wait: "wait",
-    bloodTest:"bloodTest",
-    cholesterolTest:"cholTest",
-    pulseOximetry:"spo2Test"
+    doTests: "Performed diagnostic tests",
 
+    // patient info
+    wait: "Waited / monitored patient",
+
+    bloodTest: "Performed blood test",
+    cholesterolTest: "Performed cholesterol test",
+    pulseOximetry: "Measured oxygen saturation (SpO2)",
 } as const;
 
 export type Action = typeof Actions[keyof typeof Actions];
 
+export type ActionKey = keyof typeof Actions

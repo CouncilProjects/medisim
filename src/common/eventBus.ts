@@ -17,6 +17,7 @@ class EventBusClass{
 
 
     public on<K extends keyof AppEvents>(event:K,callback:EventCallback<AppEvents[K]>) : ()=>void{
+        console.log("Added listener for "+event);
         if(!this.eventMap[event]){
             this.eventMap[event] = [];
         }

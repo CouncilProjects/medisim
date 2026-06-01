@@ -1,7 +1,7 @@
 import eventBus from "../common/eventBus";
 import type { Debrief, NodeTimelineSnapshot } from "../scenarioHome/endScreen/EndScreen";
-import type { Action } from "./schemas/actionEnum";
-import { type Scenario,type Node, type Effect, type Option } from "./types";
+import { Actions, type Action, type ActionKey } from "./schemas/actionEnum";
+import { type Scenario,type Node, type Effect } from "./types";
 
 export class Engine{
     scenario!:Scenario
@@ -50,7 +50,7 @@ export class Engine{
         eventBus.emit("movedToNewNode",{nodeTitle:this.scenario.nodes[this.scenario.current_node].text});
     }
 
-    private doEffects(eff:Effect[],action:Action){
+    private doEffects(eff:Effect[],action:ActionKey){
         let noNextNode=true
         for(const effect of eff){
             switch (effect.type) {
@@ -76,7 +76,7 @@ export class Engine{
     }
 
 
-    public actionHappend(action:Action) : Scenario|null{
+    public actionHappend(action:ActionKey) : Scenario|null{
         if(!this.scenario) return null;
         this.scenario.actionsTaken.push(action);
         const node:Node = this.getCurrentNode()
@@ -114,10 +114,10 @@ export class Engine{
     public getDebrief(scen:Scenario) : Debrief{
         let good:number = 0;
         let bad:number = 0;
-        let debrief:Debrief = {
+        const debrief:Debrief = {
             scenarioName:scen.title,
             goodPercent:0.0,
-            taker:scen.username,
+            taker:(scen.username || "XX"),
             score:scen.state.score,
             timeline:[]
         }
@@ -129,23 +129,22 @@ export class Engine{
             nodeTimeline:[]
         }
 
-        let foundValid=false;
-
-        console.log(scen.actionsTaken);
-
-        for(let action of scen.actionsTaken){
+        for(const action of scen.actionsTaken){
             let foundValid = false;
             const optionPool = scen.nodes[scen.current_node].options
-            for(let option of optionPool){
+            if(optionPool==undefined){
+                break;
+            }
+            for(const option of optionPool){
                 if(option.action==action){
                     good++;
                     foundValid=true;
 
-                    nodeTimeline.nodeTimeline.push({action:action,valid:true,scoreDelta:option.effects.find(ef=>ef.type=="score").value})
+                    nodeTimeline.nodeTimeline.push({action:Actions[action],valid:true,scoreDelta:(option.effects.find(ef=>ef.type=="score")?.value||0)})
                     
                     debrief.timeline.push(nodeTimeline);
 
-                    let nextNode = option.effects.find(eff => eff.type == "next_node")?.node_id
+                    const nextNode = option.effects.find(eff => eff.type == "next_node")?.node_id
                     
                     if(nextNode==null || nextNode==undefined){
                         break;
@@ -164,7 +163,7 @@ export class Engine{
             }
             if(! foundValid){
                 bad++;
-                nodeTimeline.nodeTimeline.push({ action: action, valid: false, scoreDelta: -5 });
+                nodeTimeline.nodeTimeline.push({ action:Actions[action], valid: false, scoreDelta: -5 });
             }
             
         }
@@ -172,22 +171,7 @@ export class Engine{
         const percent = (good/(good+bad))*100.0
         debrief.goodPercent = percent;
 
-        console.table(debrief)
-
         return debrief
-    }
-
-    testGetInfo(){
-        console.log("Score: "+this.scenario.state.score);
-        const node = this.getCurrentNodeInfo();
-        console.log("Current node [" + node[0] + "] " + node[1])
-        console.table(this.scenario.state.vitals);
-        
-    }
-
-    getCurrentNodeInfo(){
-        const curNode = this.getCurrentNode()
-        return [curNode.id,curNode.text] 
     }
 }
 

@@ -7,7 +7,7 @@ import { type Scenario, type Vitals } from "../engine/types";
 import engine from "../engine/engine";
 import eventBus from "../common/eventBus";
 import { Outlet } from "react-router";
-import { Actions, type Action } from "../engine/schemas/actionEnum";
+import { Actions, type Action, type ActionKey } from "../engine/schemas/actionEnum";
 import { useAppContext } from "../App";
 import { OnLineHelp, type PageHelp } from "../common/onlineHelp";
 
@@ -24,14 +24,14 @@ export function ScenarioHome(){
     const nav = useNavigate();
     const [scenarios,setScenarios] = useLocalStorage<Scenario[]>({key:"medisim-ongoing-scenarios",defaultValue:[]});
     const workingScenario = scenarios.find(scen => scen.uuid === params.scenarioId);
-    const latestScenario = useRef(null);
+    const latestScenario = useRef<Scenario|null>(null);
 
     useHotkeys([
-        ['1', () => { nav("vitals", { replace: true }) }],
-        ['2', () => { nav("cabinet", { replace: true }) }],
-        ['3', () => { nav("info", { replace: true }) }],
-        ['4', () => { nav("ventilation", { replace: true }) }],
-        ['d', () => { eventBus.emit("buttonPressed", { action: Actions.callDoctor }) }]
+        ['1', () => { nav("vitals") }],
+        ['2', () => { nav("cabinet") }],
+        ['3', () => { nav("info") }],
+        ['4', () => { nav("ventilation") }],
+        ['d', () => { eventBus.emit("buttonPressed", { action: "callDoctor" }) }]
     ]);
 
 
@@ -48,7 +48,7 @@ export function ScenarioHome(){
     },[]);
 
 
-    function actionHandle(action:Action) {
+    function actionHandle(action:ActionKey) {
         knownAction.current=true;
         const changed = engine.actionHappend(action);
         latestScenario.current = changed;
@@ -114,7 +114,6 @@ export function ScenarioHome(){
     
     
     useEffect(() => {
-        console.log("Done :" +knownAction);
         if (!workingScenario) return;
 
         if(knownAction.current){
@@ -124,11 +123,6 @@ export function ScenarioHome(){
 
         const copy = structuredClone(workingScenario);
         engine.setScenario(copy);
-        
-        
-        return () => {
-            console.log("Ending effect deregistering eventbus");
-        };
     }, [params.scenarioId,workingScenario]);
 
     if(!workingScenario){

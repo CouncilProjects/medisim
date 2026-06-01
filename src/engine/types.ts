@@ -4,7 +4,7 @@ import { conditionSchema } from "./schemas/conditions.schemas";
 import { effectSchema } from "./schemas/effect.schemas";
 import { patientSchema } from "./schemas/patients.schemas";
 import { vitalsSchema } from "./schemas/vitals.schemas";
-import type { Action } from "./schemas/actionEnum";
+import type { Action, ActionKey } from "./schemas/actionEnum";
 
 // ==========================================
 // 1. NO-DEPENDENCY AUTOMATED TYPES
@@ -24,7 +24,7 @@ export type State = {
 
 export type Option = {
     label: string;
-    action:Action
+    action:ActionKey
     effects: Effect[];
 };
 
@@ -47,5 +47,5 @@ export type Scenario = {
     current_node: number;
     state: State;
     nodes: Node[];
-    actionsTaken:Action[];
+    actionsTaken:ActionKey[];
 };

@@ -26,10 +26,10 @@ export default function VitalScreen() {
                 <Text fw={300} size="md" bg={hrFlash ? 'orange' : 'transparent'}>Heart rate : {context.vitals.hr.value} currently {context.vitals.hr.state}</Text>
                 <Text fw={300} size="md" bg={bpFlash ? 'orange' : 'transparent'}>Temprature : {context.vitals.temp.value} currently {context.vitals.temp.state}</Text>
                 <Text fw={300} size="md" bg={tempFlash ? 'orange' : 'transparent'}>Blood preasure : {context.vitals.bp.value} currently {context.vitals.bp.state}</Text>
-                <Button color="red" onClick={() => eventBus.emit("buttonPressed", { action: Actions.shock })}>
+                <Button color="red" onClick={() => eventBus.emit("buttonPressed", { action: "shock" })}>
                     Shock
                 </Button>
-                <Button color="red" variant="light" onClick={() => eventBus.emit("buttonPressed", { action: Actions.shockLight })}>
+                <Button color="red" variant="light" onClick={() => eventBus.emit("buttonPressed", { action: "shockLight" })}>
                     Shock Light
                 </Button>
             </Stack>
