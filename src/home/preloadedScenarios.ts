@@ -125,5 +125,228 @@ export const preLoadScenarios:Scenario[] = [
             }
         ],
         actionsTaken:[],
+    },
+    {
+        id:"Unknown_homeless",
+        title:"The homeless man",
+        state: {
+            score: 0,
+            vitals: {
+                hr: { value: 150, state: "rising" },
+                spo2: { value: 94, state: "stable" },
+                rr: { value: 22, state: "rising" },
+                bp: { value: 150, state: "rising" },
+                temp: { value: 45.2, state: "rising" }
+            }
+        },
+        current_node:0,
+        actionsTaken:[],
+        nodes:[
+            {
+                id:"entry",
+                text:"A homeless man entered the hospital, he seems disioriented",
+                options:[
+                    {
+                        label:"Do a blood test",
+                        action:'bloodTest',
+                        effects:[
+                            {
+                                type:'score',
+                                value:5
+                            },
+                            {
+                                type:'next_node',
+                                node_id:'blood_test_results'
+                            }
+                        ]
+                    },
+                    {
+                        label: "Give anti temprature drugs",
+                        action: 'tempDown',
+                        effects: [
+                            {
+                                type: 'score',
+                                value: 10
+                            },
+                            {
+                                type: 'next_node',
+                                node_id: 'unknown_condition'
+                            },
+                            {
+                                type:'update_state',
+                                path:'vitals.temp.value',
+                                value:38
+                            },
+                            {
+                                type: 'update_state',
+                                path: 'vitals.temp.state',
+                                value: 'stable'
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "blood_test_results",
+                text: "The blood test results indicate the patient is suffering from an illness affecting his blood pressure. He requires medication to stabilize it.",
+                options: [
+                    {
+                        label: "Administer blood pressure drugs",
+                        action: "bloodPressureDown",
+                        effects: [
+                            {
+                                type: "score",
+                                value: 10
+                            },
+                            {
+                                type:'update_state',
+                                path:'vitals.hr.value',
+                                value:120
+                            },
+                            {
+                                type: 'update_state',
+                                path: 'vitals.bp.value',
+                                value: 90
+                            },
+                            {
+                                type: 'update_state',
+                                path: 'vitals.hr.state',
+                                value: 'stable'
+                            },
+                            {
+                                type: 'update_state',
+                                path: 'vitals.hr.state',
+                                value: 'stable'
+                            },
+                            {
+                                type: "next_node",
+                                node_id: "fever_discovered"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "fever_discovered",
+                text: "The patient's blood pressure is improving, but he is still running a fever, he is weak from the drug dosage",
+                options: [
+                    {
+                        label: "Give light anti-temperature medication",
+                        action: "tempDownLight",
+                        effects: [
+                            {
+                                type: "score",
+                                value: 15
+                            },
+                            {
+                                type: "next_node",
+                                node_id: "patient_stabilized"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "patient_stabilized",
+                text: "The patient's condition has stabilized. His fever is under control and his blood pressure is within acceptable limits. All you have to do is wait",
+                options: [
+                    {
+                        action:'wait',
+                        effects:[],
+                        label:'end-1'
+                    }
+                ]
+            },
+
+            // Existing anti-temperature route leads here
+            {
+                id: "unknown_condition",
+                text: "The patient's temperature has decreased, but something is still clearly wrong. An underlying illness may be present.",
+                options: [
+                    {
+                        label: "Perform blood test",
+                        action: "bloodTest",
+                        effects: [
+                            {
+                                type: "score",
+                                value: 5
+                            },
+                            {
+                                type: "next_node",
+                                node_id: "late_diagnosis"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "late_diagnosis",
+                text: "The blood test reveals the illness has progressed while untreated. The patient's blood pressure is dropping rapidly and his condition is worsening.",
+                options: [
+                    {
+                        label: "Administer blood pressure drugs",
+                        action: "bloodPressureDown",
+                        effects: [
+                            {
+                                type: "score",
+                                value: 5
+                            },
+                            {
+                                type: "next_node",
+                                node_id: "late_diagnosis_stage_2"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "late_diagnosis_stage_2",
+                text: "The patient responds slightly, but his condition remains critical. Additional blood pressure support is required.",
+                options: [
+                    {
+                        label: "Administer blood pressure drugs",
+                        action: "bloodPressureDown",
+                        effects: [
+                            {
+                                type: "score",
+                                value: 5
+                            },
+                            {
+                                type: "next_node",
+                                node_id: "late_diagnosis_stage_3"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "late_diagnosis_stage_3",
+                text: "The patient is still weak and unstable. One final dose of blood pressure medication is needed.",
+                options: [
+                    {
+                        label: "Administer blood pressure drugs",
+                        action: "bloodPressureDown",
+                        effects: [
+                            {
+                                type: "score",
+                                value: 5
+                            },
+                            {
+                                type: "next_node",
+                                node_id: "recovered_after_delay"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "recovered_after_delay",
+                text: "After extensive treatment, the patient's blood pressure has stabilized. He is expected to recover, though the delayed diagnosis significantly complicated treatment. Now just wait",
+                options: [
+                    
+                ]
+            }
+        ]
+        
     }
 ]

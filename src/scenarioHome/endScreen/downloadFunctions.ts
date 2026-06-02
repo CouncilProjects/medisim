@@ -105,12 +105,12 @@ export function downloadPDF(debrif: Debrief,dateTOprint:string) {
         img.src = '/favicon.png'
         doc.addImage(img, 'png', 4, 4, 24, 24);
 
-        addWrapped("Medisim", doc.internal.pageSize.width / 2, { fontSize: 15, color: [44, 134, 235], lineHeightTimes: 1, align:'center' });
-        addWrapped(debrif.scenarioName,30,{fontSize:15,lineHeightTimes:1, forcePushDown:20});
+        let prev = addWrapped("Medisim", doc.internal.pageSize.width / 2, { forcePushDown:null,fontSize: 15, color: [44, 134, 235], lineHeightTimes: 1, align:'center' });
+        addWrapped("gr", prev + 1, { fontSize: 10, color: [44, 134, 235],lineHeightTimes:1.5});
+        addWrapped("Scenario : "+debrif.scenarioName,30,{fontSize:15,lineHeightTimes:1, forcePushDown:20});
         
         
-        let prev = addWrapped(`Taken by: ${debrif.taker} Score: ${debrif.score}`, 15,{forcePushDown:null});
-        addWrapped(`Taken by: ${debrif.taker} Score: ${debrif.score}`, prev+5);
+        addWrapped(`Taken by: ${debrif.taker} Score: ${debrif.score}`, 15);
         addWrapped(`Accuracy: ${debrif.goodPercent}%`, 15);
         addWrapped(`Finished at : `+dateTOprint,15,{color:[130,100,200]})
         for (const nodeLine of debrif.timeline) {

@@ -76,6 +76,15 @@ export default function CabinetScreen() {
                         Do Tests
                     </Button>
                 </Group>
+
+                <Group grow>
+                    <Button variant="outline" onClick={() => eventBus.emit("buttonPressed", { action: 'bloodTest' })}>
+                        blood test
+                    </Button>
+                    <Button variant="outline" onClick={() => eventBus.emit("buttonPressed", { action: 'cholesterolTest' })}>
+                        Cholesterol test
+                    </Button>
+                </Group>
             </Stack>
         </Center>
     );

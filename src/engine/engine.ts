@@ -45,12 +45,19 @@ export class Engine{
     }
 
     private moveToNode(nodeId:string){
-        const node = this.scenario.nodes.findIndex(node => node.id == nodeId)
+        const node = this.scenario.nodes.findIndex(node => node.id == nodeId);
+    
         this.scenario.current_node = node;
+        if(this.scenario.nodes[this.scenario.current_node].options.length==0){
+            eventBus.emit('end',null);
+            return;
+        }
         eventBus.emit("movedToNewNode",{nodeTitle:this.scenario.nodes[this.scenario.current_node].text});
     }
 
     private doEffects(eff:Effect[],action:ActionKey){
+        console.log(eff.toString());
+        console.log(Actions[action]);
         let noNextNode=true
         for(const effect of eff){
             switch (effect.type) {
@@ -73,18 +80,23 @@ export class Engine{
         if(noNextNode){
             eventBus.emit("end",null);
         }
+        console.log("wtf");
     }
 
 
     public actionHappend(action:ActionKey) : Scenario|null{
+        console.log(1);
         if(!this.scenario) return null;
         this.scenario.actionsTaken.push(action);
         const node:Node = this.getCurrentNode()
         if(node.options == null){
             return null;
         }
+        console.log(2);
+        console.log(JSON.stringify(node));
 
         for(const opt of node.options){
+            console.log(JSON.stringify(opt));
             if(opt.action == action){
                 this.doEffects(opt.effects,action);
                 return this.scenario;
@@ -96,19 +108,55 @@ export class Engine{
         return this.scenario;
     }
 
-    public getEventsTillCurrent() : string[]{
-        if(this.scenario==null){ 
+    public getEventsTillCurrent(): string[] {
+        if (this.scenario == null) {
             console.log("No scenario");
             return [];
         }
 
-        //will need to decide on a path keeping strategy for now we bring them all
-        const arr = [];
-        for(let i=this.scenario.current_node;i>=0;i--){
-            arr.push(this.scenario.nodes[i].text);
+        const events: string[] = [];
+
+        let currentNodeIndex = 0;
+
+        // Add starting node
+        events.push(this.scenario.nodes[currentNodeIndex].text);
+
+        for (const action of this.scenario.actionsTaken) {
+            const currentNode = this.scenario.nodes[currentNodeIndex];
+
+            if (!currentNode.options) {
+                break;
+            }
+
+            const selectedOption = currentNode.options.find(
+                option => option.action === action
+            );
+
+            // Ignore invalid actions
+            if (!selectedOption) {
+                continue;
+            }
+
+            const nextNodeId = selectedOption.effects.find(
+                effect => effect.type === "next_node"
+            )?.node_id;
+
+            if (!nextNodeId) {
+                break;
+            }
+
+            currentNodeIndex = this.scenario.nodes.findIndex(
+                node => node.id === nextNodeId
+            );
+
+            if (currentNodeIndex === -1) {
+                break;
+            }
+
+            events.push(this.scenario.nodes[currentNodeIndex].text);
         }
-        
-        return arr;
+
+        return events.reverse();
     }
 
     public getDebrief(scen:Scenario) : Debrief{
