@@ -1,11 +1,11 @@
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { Accordion, Box, Button, Card,Center,Divider,Group,Image,List,Loader,Modal,NumberFormatter,rgba,Stack,Text, Timeline, TimelineItem } from "@mantine/core";
 import type { Action } from "../../engine/schemas/actionEnum";
 import { useLocation, useNavigate } from "react-router";
 import engine from "../../engine/engine";
-import { jsPDF } from "jspdf";
 import { OnLineHelp, type PageHelp } from "../../common/onlineHelp";
 import { useAppContext } from "../../App";
+import { downloadJSON,downloadPDF } from "./downloadFunctions";
 
 
 export function EndScreen(){
@@ -49,123 +49,27 @@ export function EndScreen(){
         };
     }, []);
 
-
-    // Source - https://stackoverflow.com/a/49917066
-    // Posted by Stefanos Chrs, modified by community. See post 'Timeline' for change history
-    // Retrieved 2026-06-01, License - CC BY-SA 4.0
-
-    function downloadJSON() {
-        const data = new Blob([JSON.stringify(debrif)], { type:'application/json'});
-        const date = new Date().toJSON();
-        const name = "medisim-Report-"+date+".json"
-
-        const url = URL.createObjectURL(data);
-
-        const a = document.createElement('a')
-        a.href = url
-        a.download = name
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-    }
-
-    function downloadPDF() {
-        const doc = new jsPDF();
-        const date = new Date().toJSON();
-
-        const now = new Date();
-        const dateTOprint = 
-            now.getFullYear() + "-" +
-            String(now.getMonth() + 1).padStart(2, "0") + "-" +
-            String(now.getDate()).padStart(2, "0") + " " +
-            String(now.getHours()).padStart(2, "0") + "-" +
-            String(now.getMinutes()).padStart(2, "0");
-
-        const name = "medisim-Report-" + date + ".pdf"
-        let i = 10;
-        const pageHeight = doc.internal.pageSize.height;
-
-        const defaultOption:defOptions = {
-            fontSize : 10,
-            color :[0, 0, 0],
-            lineHeightTimes : 0.5,
-        }
-
-        type defOptions = {
-            fontSize?:number,
-            color?:[number,number,number],
-            lineHeightTimes?:number
-        }
-
-        function addWrapped(text:string, x:number, options:defOptions = defaultOption) {
-            const {
-                fontSize = 10,
-                color = [0, 0, 0] as [number,number,number],
-                lineHeightTimes = 0.5,
-            } = options;
-
-            doc.setFontSize(fontSize);
-            
-            doc.setTextColor(...color);
-
-            const lineHeight = fontSize * lineHeightTimes;
-            const lines = doc.splitTextToSize(text, 170);
-
-            for (const line of lines) {
-                if (i > pageHeight - 20) {
-                    doc.addPage();
-                    i = 20;
-                }
-
-                doc.text(line, x, i);
-                i += lineHeight;
-            }
-
-            // reset (important so styling doesn't leak)
-            doc.setTextColor(0, 0, 0);
-        }
-
-        addWrapped(debrif.scenarioName,10,{fontSize:15,lineHeightTimes:1});
-        
-        addWrapped(`Taken by: ${debrif.taker} Score: ${debrif.score}`, 15);
-        addWrapped(`Accuracy: ${debrif.goodPercent}%`, 15);
-        addWrapped(`Finished at : `+dateTOprint,10,{color:[130,100,200]})
-        for (const nodeLine of debrif.timeline) {
-            addWrapped(nodeLine.duringNode+":\" " + nodeLine.nodeText+"\"" , 20);
-            
-            for (const act of nodeLine.nodeTimeline) {
-                if(act.valid){
-                    doc.setTextColor(0, 255, 0);
-                } else {
-                    doc.setTextColor(255, 0, 0);
-                }
-                addWrapped(
-                    `• [${act.action}] Affected score by: ${act.scoreDelta}`,
-                    25,
-                    {color:act.valid?[20,200,30]:[200,30,20]}
-                );
-                doc.setTextColor(0, 0, 0);
-            }
-        }
-        
-
-        
-        doc.save(name);
-    }
-
     if(debrif==null){
         return <Loader></Loader>
     }
 
-    return <Center w={'100%'} h={'100%'} bg={rgba('red',0.6)}>
+    const now = new Date();
+    const dateTOprint =
+        now.getFullYear() + "-" +
+        String(now.getMonth() + 1).padStart(2, "0") + "-" +
+        String(now.getDate()).padStart(2, "0") + " " +
+        String(now.getHours()).padStart(2, "0") + "-" +
+        String(now.getMinutes()).padStart(2, "0");
+
+    return <Center w={'100%'} h={'100%'}>
         <Card p={12} m={4}>
             <Group justify="space-between">
                 <Text fw={1000}>Your report</Text>
                 
-                <Stack>
-                    <Button leftSection={<Image src={"/download.svg"} w={32} h={32}></Image>} onClick={() => { downloadJSON() }}>Download .json</Button>
-                    <Button leftSection={<Image src={"/download.svg"} w={32} h={32}></Image>} onClick={() => { downloadPDF() }}>Download .pdf</Button>
-                </Stack>
+                <Group>
+                    <Button leftSection={<Image src={"/download.svg"} w={32} h={32}></Image>} onClick={() => { downloadJSON(debrif) }}>Download .json</Button>
+                    <Button leftSection={<Image src={"/download.svg"} w={32} h={32}></Image>} onClick={() => { downloadPDF(debrif,dateTOprint) }}>Download .pdf</Button>
+                </Group>
             </Group>
             <Stack>
                 <Text>Scenario : {debrif.scenarioName}</Text>
@@ -175,7 +79,7 @@ export function EndScreen(){
             </Stack>
             <Divider></Divider>
             <Text>Timeline</Text>
-            
+             
             <Box mah={"60dvh"} style={{overflowY:'auto'}}>
                 <Timeline active={debrif.timeline.length}>
                     {
