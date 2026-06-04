@@ -1,90 +1,218 @@
+//npm install @tabler/icons-react
+
 import React from 'react';
-import { Stack, Group, Button, Text, Divider, Center, rgba } from '@mantine/core';
-import { Actions } from '../../engine/schemas/actionEnum';
-import eventBus from '../../common/eventBus';
+import {
+    Stack,
+    Text,
+    Divider,
+    Center,
+    SimpleGrid,
+    Box,
+    Paper,
+} from '@mantine/core';
 import { useClickOutside } from '@mantine/hooks';
 import { useNavigate } from 'react-router';
+import eventBus from '../../common/eventBus';
+
+import {
+    IconClock,
+    IconFlask,
+    IconHeartRateMonitor
+} from '@tabler/icons-react';
+
+import painkillersImg from '../../assets/painkillers.jpg';
+import painkillersLightImg from '../../assets/painkillers-light.jpg';
+import ibuprofenImg from '../../assets/ibuprofen.jpg';
+import pseudoephedrineImg from '../../assets/pseudoephedrine.jpg';
+import betaBlockersImg from '../../assets/beta-blockers.jpg';
+import lisinoprilImg from '../../assets/lisinopril.jpg';
+import amphotericinImg from '../../assets/amphotericin.jpg';
+import vaccinesImg from '../../assets/vaccines.jpg';
+import naproxenImg from '../../assets/naproxen.jpg';
+import acetaminophenImg from '../../assets/acetaminophen.jpg';
+
+interface VialButtonProps {
+    label: string;
+    subtitle: string;
+    onClick: () => void;
+    imageSrc: string;
+}
+
+interface ActionCardProps {
+    label: string;
+    color: string;
+    icon: React.ReactNode;
+    onClick: () => void;
+}
+
+interface SectionProps {
+    title: string;
+    color: string;
+    children: React.ReactNode;
+}
+
+function Section({ title, color, children }: SectionProps) {
+    return (
+        <Stack gap={6}>
+            <Text fw={700} c={color} tt="uppercase" style={{ letterSpacing: 0.8, fontSize: 11 }}>
+                {title}
+            </Text>
+            {children}
+        </Stack>
+    );
+}
+
+function VialButton({ label, subtitle, onClick, imageSrc }: VialButtonProps) {
+    return (
+        <Paper
+            onClick={onClick}
+            withBorder
+            style={{
+                cursor: 'pointer',
+                background: '#141414',
+                borderColor: '#222',
+                borderRadius: 8,
+                overflow: 'hidden',
+                transition: 'transform 0.1s ease, border-color 0.1s ease',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#444')}
+            onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#222')}
+        >
+            {/* Reduced height to 90 to prevent scrolling while keeping the image prominent */}
+            <Center h={90} bg="#0a0a0a" p={8}>
+                <img
+                    src={imageSrc}
+                    alt={label}
+                    style={{
+                        maxHeight: '100%',
+                        maxWidth: '100%',
+                        objectFit: 'contain',
+                        display: 'block',
+                    }}
+                />
+            </Center>
+            
+            <Box px={8} py={6} style={{ borderTop: '1px solid #222' }}>
+                <Text fw={600} c="gray.3" style={{ lineHeight: 1.2, fontSize: 12 }}>
+                    {label}
+                </Text>
+                <Text c="dimmed" tt="uppercase" style={{ fontSize: '9px', letterSpacing: 0.4, marginTop: 2 }}>
+                    {subtitle}
+                </Text>
+            </Box>
+        </Paper>
+    );
+}
+
+function ActionCard({ label, color, icon, onClick }: ActionCardProps) {
+    return (
+        <Paper
+            p="xs"
+            withBorder
+            onClick={onClick}
+            style={{
+                cursor: 'pointer',
+                background: '#141414',
+                borderColor: '#222',
+                borderRadius: 8,
+                minHeight: 65,
+                transition: 'border-color 0.1s ease',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.borderColor = color)}
+            onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#222')}
+        >
+            <Stack align="center" justify="center" h="100%" gap={4}>
+                <Box style={{ color }}>
+                    {icon}
+                </Box>
+                <Text fw={600} ta="center" c="gray.3" style={{ lineHeight: 1, fontSize: 11 }}>
+                    {label}
+                </Text>
+            </Stack>
+        </Paper>
+    );
+}
 
 export default function CabinetScreen() {
     const nav = useNavigate();
     const ref = useClickOutside(() => nav(-1));
 
     return (
-        <Center w="100%"  h="100%" bg={rgba('dark',0.6)}>
-            <Stack ref={ref} bg={'dark'} p={4} gap="md">
-                <Text fw={700} size="lg">Medicine Cabinet & Procedures</Text>
+        <Center w="100vw" h="100vh" bg="rgba(0,0,0,0.75)" p="sm">
+            <Stack
+                ref={ref}
+                p="md"
+                maw={750} 
+                w="100%"
+                gap={12}
+                style={{
+                    background: '#0e0e0e',
+                    borderRadius: 12,
+                    border: '1px solid #222',
+                    boxShadow: '0 20px 50px rgba(0,0,0,0.85)',
+                }}
+            >
+                <Text fw={700} size="lg" c="gray.2">
+                    Medical Cabinet & Procedures
+                </Text>
 
-                {/* Painkillers */}
-                <Group grow>
-                    <Button onClick={() => eventBus.emit("buttonPressed", { action: "painkillers" })}>
-                        Painkillers
-                    </Button>
-                    <Button variant="light" onClick={() => eventBus.emit("buttonPressed", { action: "painkillersLight" })}>
-                        Painkillers Light
-                    </Button>
-                </Group>
+                <Section title="Painkillers Shelf" color="green.5">
+                    <SimpleGrid cols={4} spacing={10}>
+                        <VialButton
+                            label="Painkillers"
+                            subtitle="Standard Dose"
+                            imageSrc={painkillersImg}
+                            onClick={() => eventBus.emit('buttonPressed', { action: 'painkillers' })}
+                        />
+                        <VialButton
+                            label="Painkillers Light"
+                            subtitle="Reduced Dose"
+                            imageSrc={painkillersLightImg}
+                            onClick={() => eventBus.emit('buttonPressed', { action: 'painkillersLight' })}
+                        />
+                    </SimpleGrid>
+                </Section>
 
-                <Divider />
+                <Section title="Blood Pressure Controls" color="violet.4">
+                    <SimpleGrid cols={4} spacing={10}>
+                        <VialButton label="Ibuprofen" subtitle="BP Up" imageSrc={ibuprofenImg}
+                            onClick={() => eventBus.emit('buttonPressed', { action: 'bloodPressureUp' })} />
+                        <VialButton label="Pseudoephedrine" subtitle="BP Up Light" imageSrc={pseudoephedrineImg}
+                            onClick={() => eventBus.emit('buttonPressed', { action: 'bloodPressureUpLight' })} />
+                        <VialButton label="Beta-Blockers" subtitle="BP Down" imageSrc={betaBlockersImg}
+                            onClick={() => eventBus.emit('buttonPressed', { action: 'bloodPressureDown' })} />
+                        <VialButton label="Lisinopril" subtitle="BP Down Light" imageSrc={lisinoprilImg}
+                            onClick={() => eventBus.emit('buttonPressed', { action: 'bloodPressureDownLight' })} />
+                    </SimpleGrid>
+                </Section>
 
-                {/* Blood Pressure */}
-                <Text size="sm" fw={500} c="dimmed">Blood Pressure Controls</Text>
-                <Group grow gap="xs">
-                    <Button onClick={() => eventBus.emit("buttonPressed", { action: "bloodPressureUp" })}>
-                        BP Up
-                    </Button>
-                    <Button variant="light" onClick={() => eventBus.emit("buttonPressed", { action:"bloodPressureUpLight" })}>
-                        BP Up Light
-                    </Button>
-                    <Button onClick={() => eventBus.emit("buttonPressed", { action: "bloodPressureDown" })}>
-                        BP Down
-                    </Button>
-                    <Button variant="light" onClick={() => eventBus.emit("buttonPressed", { action: "bloodPressureDownLight" })}>
-                        BP Down Light
-                    </Button>
-                </Group>
+                <Section title="Temperature Controls" color="red.5">
+                    <SimpleGrid cols={4} spacing={10}>
+                        <VialButton label="Amphotericin B" subtitle="Temp Up" imageSrc={amphotericinImg}
+                            onClick={() => eventBus.emit('buttonPressed', { action: 'tempUp' })} />
+                        <VialButton label="Routine Vaccines" subtitle="Temp Up Light" imageSrc={vaccinesImg}
+                            onClick={() => eventBus.emit('buttonPressed', { action: 'tempUpLight' })} />
+                        <VialButton label="Naproxen" subtitle="Temp Down" imageSrc={naproxenImg}
+                            onClick={() => eventBus.emit('buttonPressed', { action: 'tempDown' })} />
+                        <VialButton label="Acetaminophen" subtitle="Temp Down Light" imageSrc={acetaminophenImg}
+                            onClick={() => eventBus.emit('buttonPressed', { action: 'tempDownLight' })} />
+                    </SimpleGrid>
+                </Section>
 
-                <Divider />
+                <Divider color="#1e1e1e" my={2} />
 
-                {/* Temperature */}
-                <Text size="sm" fw={500} c="dimmed">Temperature Controls</Text>
-                <Group grow gap="xs">
-                    <Button onClick={() => eventBus.emit("buttonPressed", { action: "tempUp" })}>
-                        Temp Up
-                    </Button>
-                    <Button variant="light" onClick={() => eventBus.emit("buttonPressed", { action: "tempUpLight" })}>
-                        Temp Up Light
-                    </Button>
-                    <Button onClick={() => eventBus.emit("buttonPressed", { action: "tempDown" })}>
-                        Temp Down
-                    </Button>
-                    <Button variant="light" onClick={() => eventBus.emit("buttonPressed", { action: "tempDownLight" })}>
-                        Temp Down Light
-                    </Button>
-                </Group>
-
-                <Divider />
-
-                {/* Misc Procedures */}
-                <Group grow>
-                    <Button variant="outline" color="gray" onClick={() => eventBus.emit("buttonPressed", { action: "wait" })}>
-                        Wait
-                    </Button>
-                    <Button variant="outline" onClick={() => eventBus.emit("buttonPressed", { action: "callDoctor" })}>
-                        Call Doctor
-                    </Button>
-                    <Button variant="outline" onClick={() => eventBus.emit("buttonPressed", { action: "doTests" })}>
-                        Do Tests
-                    </Button>
-                </Group>
-
-                <Group grow>
-                    <Button variant="outline" onClick={() => eventBus.emit("buttonPressed", { action: 'bloodTest' })}>
-                        blood test
-                    </Button>
-                    <Button variant="outline" onClick={() => eventBus.emit("buttonPressed", { action: 'cholesterolTest' })}>
-                        Cholesterol test
-                    </Button>
-                </Group>
+                <Section title="Procedures & Tests" color="blue.4">
+                    <SimpleGrid cols={4} spacing={10}>
+                        <ActionCard label="Wait" color="#868e96" icon={<IconClock size={20} />}
+                            onClick={() => eventBus.emit('buttonPressed', { action: 'wait' })} />
+                        <ActionCard label="Do Tests" color="#4dabf7" icon={<IconFlask size={20} />}
+                            onClick={() => eventBus.emit('buttonPressed', { action: 'doTests' })} />
+                        <ActionCard label="Blood Test" color="#fa5252" icon={<IconFlask size={20} />}
+                            onClick={() => eventBus.emit('buttonPressed', { action: 'bloodTest' })} />
+                        <ActionCard label="Cholesterol" color="#fab005" icon={<IconHeartRateMonitor size={20} />}
+                            onClick={() => eventBus.emit('buttonPressed', { action: 'cholesterolTest' })} />
+                    </SimpleGrid>
+                </Section>
             </Stack>
         </Center>
     );
