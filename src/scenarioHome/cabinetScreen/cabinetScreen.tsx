@@ -173,28 +173,28 @@ export default function CabinetScreen() {
                     </SimpleGrid>
                 </Section>
 
-                <Section title="Blood Pressure Controls" color="violet.4">
+                <Section title="Blood Pressure Medicine Shelf" color="violet.4">
                     <SimpleGrid cols={4} spacing={10}>
-                        <VialButton label="Ibuprofen" subtitle="BP Up" imageSrc={ibuprofenImg}
+                        <VialButton label="Ibuprofen" subtitle="Increase Blood Pressure" imageSrc={ibuprofenImg}
                             onClick={() => eventBus.emit('buttonPressed', { action: 'bloodPressureUp' })} />
-                        <VialButton label="Pseudoephedrine" subtitle="BP Up Light" imageSrc={pseudoephedrineImg}
+                        <VialButton label="Pseudoephedrine" subtitle="Increase Blood Pressure Light" imageSrc={pseudoephedrineImg}
                             onClick={() => eventBus.emit('buttonPressed', { action: 'bloodPressureUpLight' })} />
-                        <VialButton label="Beta-Blockers" subtitle="BP Down" imageSrc={betaBlockersImg}
+                        <VialButton label="Beta-Blockers" subtitle="Decrease Blood Pressure" imageSrc={betaBlockersImg}
                             onClick={() => eventBus.emit('buttonPressed', { action: 'bloodPressureDown' })} />
-                        <VialButton label="Lisinopril" subtitle="BP Down Light" imageSrc={lisinoprilImg}
+                        <VialButton label="Lisinopril" subtitle="Decrease Blood Pressure Light" imageSrc={lisinoprilImg}
                             onClick={() => eventBus.emit('buttonPressed', { action: 'bloodPressureDownLight' })} />
                     </SimpleGrid>
                 </Section>
 
-                <Section title="Temperature Controls" color="red.5">
+                <Section title="Temperature Medicine Shelf" color="red.5">
                     <SimpleGrid cols={4} spacing={10}>
-                        <VialButton label="Amphotericin B" subtitle="Temp Up" imageSrc={amphotericinImg}
+                        <VialButton label="Amphotericin B" subtitle="Increase Temperature" imageSrc={amphotericinImg}
                             onClick={() => eventBus.emit('buttonPressed', { action: 'tempUp' })} />
-                        <VialButton label="Routine Vaccines" subtitle="Temp Up Light" imageSrc={vaccinesImg}
+                        <VialButton label="Routine Vaccines" subtitle="Increase Temperature Light" imageSrc={vaccinesImg}
                             onClick={() => eventBus.emit('buttonPressed', { action: 'tempUpLight' })} />
-                        <VialButton label="Naproxen" subtitle="Temp Down" imageSrc={naproxenImg}
+                        <VialButton label="Naproxen" subtitle="Decrease Temperature" imageSrc={naproxenImg}
                             onClick={() => eventBus.emit('buttonPressed', { action: 'tempDown' })} />
-                        <VialButton label="Acetaminophen" subtitle="Temp Down Light" imageSrc={acetaminophenImg}
+                        <VialButton label="Acetaminophen" subtitle="Decrease Temperature Light" imageSrc={acetaminophenImg}
                             onClick={() => eventBus.emit('buttonPressed', { action: 'tempDownLight' })} />
                     </SimpleGrid>
                 </Section>
