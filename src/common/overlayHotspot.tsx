@@ -26,6 +26,7 @@ export function OverlayImage({src,hotspots}:overlayProps){
     const imageRef = useRef<HTMLImageElement|null>(null)
     useHotkeys([
         ['shift+s', () => glowHandle.toggle()],
+        ['shift+σ', () => glowHandle.toggle()]
     ]);
     
     const [layout,setLayout] = useState({
