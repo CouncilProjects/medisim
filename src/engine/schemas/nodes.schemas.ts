@@ -3,7 +3,7 @@ export const nodeSchema = {
 
     type: "object",
 
-    required: ["id", "text"],
+    required: ["id", "text","options"],
 
     properties: {
         id: {type: "string"},
@@ -12,7 +12,9 @@ export const nodeSchema = {
             type: "array",
             
             items: {$ref: "option"}
-        }
+        },
+
+        timeout: {$ref: "timeout"},
     },
     additionalProperties:false
 } as const;

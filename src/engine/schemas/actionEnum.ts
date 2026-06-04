@@ -1,4 +1,7 @@
 export const Actions = {
+    //timeout
+    timeout: "Timeout Triggered",
+
     // vitals
     shockLight: "Applied light shock",
     shock: "Applied shock",

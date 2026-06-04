@@ -7,11 +7,11 @@ export const preLoadScenarios:Scenario[] = [
         UUID: "",
         title: "Acute Chest Pain Case",
         current_node: 0,
-        actions_taken: [],
+        actionsTaken: [],
         state: {
             score: 0,
             vitals: {
-                hr: { value: 110, state: "rising" },
+                hr: { value: 110, state: "falling" },
                 spo2: { value: 94, state: "falling" },
                 rr: { value: 22, state: "rising" },
                 bp: { value: 150, state: "rising" },
@@ -61,8 +61,21 @@ export const preLoadScenarios:Scenario[] = [
                             }
                         ]
                     }
+                ],
+                timeout: {
+                    time: 20000,
+                    effects: [
+                    {
+                        type: "score",
+                        value: -5
+                    },
+                    {
+                        type: "next_node",
+                        node_id: "node_1"
+                    }
                 ]
             },
+        },
 
             {
                 id: "node_1",
@@ -126,10 +139,10 @@ export const preLoadScenarios:Scenario[] = [
                 ]
             }
         ],
-        actionsTaken:[],
     },
     {
         id:"Unknown_homeless",
+        UUID:"",
         title:"The homeless man",
         state: {
             score: 0,

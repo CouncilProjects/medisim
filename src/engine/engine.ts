@@ -11,7 +11,27 @@ export class Engine{
 
     setScenario(scen:Scenario){
         this.scenario=scen;
+
         eventBus.emit("movedToNewNode", { nodeTitle: this.scenario.nodes[this.scenario.current_node].text });
+
+        if (this.timeoutHandle) {
+            clearTimeout(this.timeoutHandle);
+            this.timeoutHandle = null;
+        }
+
+
+        const timeout = (this.scenario.nodes[this.scenario.current_node].timeout)
+
+        if (timeout !== undefined) {
+
+            eventBus.emit("nodeEntered", {
+                timeout:timeout.time
+            });
+
+            this.timeoutHandle = setTimeout(() => {
+               this.doEffects(timeout!.effects, "timeout") 
+            }, (timeout.time));
+        }
     }
 
     // Source - https://stackoverflow.com/q/39060905
@@ -44,6 +64,8 @@ export class Engine{
         return this.scenario.nodes[this.scenario.current_node]
     }
 
+    private timeoutHandle:any = null;
+
     private moveToNode(nodeId:string){
         const node = this.scenario.nodes.findIndex(node => node.id == nodeId);
     
@@ -53,6 +75,25 @@ export class Engine{
             return;
         }
         eventBus.emit("movedToNewNode",{nodeTitle:this.scenario.nodes[this.scenario.current_node].text});
+
+        if (this.timeoutHandle) {
+            clearTimeout(this.timeoutHandle);
+            this.timeoutHandle = null;
+        }
+
+
+        const timeout = (this.scenario.nodes[this.scenario.current_node].timeout)
+
+        if (timeout !== undefined) {
+
+            eventBus.emit("nodeEntered", {
+                timeout:timeout.time
+            });
+
+            this.timeoutHandle = setTimeout(() => {
+               this.doEffects(timeout!.effects, "timeout") 
+            }, (timeout.time));
+        }
     }
 
     private doEffects(eff:Effect[],action:ActionKey){

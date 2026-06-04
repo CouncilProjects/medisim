@@ -1,11 +1,12 @@
 import { Actions } from "./actionEnum";
+import {type ActionKey} from "./actionEnum";
 
 export const ScenarioSchema = {
     $id: "scenario",
 
     type: "object",
 
-    required: ["id", "UUID", "title", "current_node", "actions_taken", "state", "nodes"],
+    required: ["id", "UUID", "title", "current_node", "actionsTaken", "state", "nodes"],
 
     properties: {
         id: {type: "string"},
@@ -14,13 +15,9 @@ export const ScenarioSchema = {
         uuid: {type:"string"},
         title: { type: "string" },
         current_node: { type: "number"},
-        actions_taken: {
+        actionsTaken: {
             type: "array",
-
-            items: {
-                type: "string",
-                enum: Object.values(Actions)
-            }
+            items: {type: "string",enum: Object.keys(Actions) as unknown as ActionKey[]}
         },
 
         state: { $ref: "state"},

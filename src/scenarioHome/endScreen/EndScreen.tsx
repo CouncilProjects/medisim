@@ -147,7 +147,7 @@ const onlineHelp:PageHelp = {
             title:"Timeline",
             steps:[
                 {stepContent:"The timeline shows what path was taken"},
-                {stepContent:"Pressing on 'detailes' brings up the actions taken and how they affected the score"}
+                {stepContent:"Pressing on 'details' brings up the actions taken and how they affected the score"}
             ]
         },
         {

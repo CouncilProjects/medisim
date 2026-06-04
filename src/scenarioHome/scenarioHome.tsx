@@ -1,6 +1,6 @@
-import { Box, Group, Kbd, Loader, useMantineTheme,Text, Modal } from "@mantine/core";
+import { Box, Group, Kbd, Loader, useMantineTheme,Text, Modal, Progress } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState} from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router";
 import { useHotkeys, useLocalStorage } from "@mantine/hooks";
 import { type Scenario, type Vitals } from "../engine/types";
@@ -29,6 +29,10 @@ export function ScenarioHome(){
     const [scenarios,setScenarios] = useLocalStorage<Scenario[]>({key:"medisim-ongoing-scenarios",defaultValue:[]});
     const workingScenario = scenarios.find(scen => scen.uuid === params.scenarioId);
     const latestScenario = useRef<Scenario|null>(null);
+    const [timeout, SetTimeoutValue] = useState<number | null>(null)
+    const [startTime, setStartTime] = useState<number | null>(null)
+    const [progress, SetProgress] = useState(0);
+
 
     useHotkeys([
         ['1', () => { nav("vitals") }],
@@ -84,6 +88,11 @@ export function ScenarioHome(){
 
 
         const unsub2 = eventBus.on("movedToNewNode", ({ nodeTitle }) => {
+
+                SetTimeoutValue(null);
+                setStartTime(null);
+                SetProgress(0);
+                
                 notifications.show(
                     {
                         title: "Medical event !",
@@ -106,11 +115,20 @@ export function ScenarioHome(){
             nav("/report",{state:{scenario:latestScenario.current},replace:true});
         });
 
+        const unsub5 = eventBus.on("nodeEntered", ({ timeout }) => {
+            const now = Date.now();
+
+            SetTimeoutValue(timeout);
+            setStartTime(now);
+            SetProgress(100);
+        })
+
         return ()=>{
             unsub();
             unsub2();
             unsub3();
             unsub4();
+            unsub5();
         }
     }, []);
 
@@ -128,6 +146,23 @@ export function ScenarioHome(){
         const copy = structuredClone(workingScenario);
         engine.setScenario(copy);
     }, [params.scenarioId,workingScenario]);
+
+    useEffect(() => {
+        if (!timeout || !startTime) return;
+
+        const interval = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const remaining = Math.max(timeout - elapsed, 0);
+
+            SetProgress((remaining / timeout) * 100);
+
+            if (remaining <= 0) {
+                clearInterval(interval);
+                }
+        }, 100);
+
+        return () => clearInterval(interval);
+        }, [timeout, startTime]);
 
     if(!workingScenario){
         return <Loader></Loader>
@@ -152,6 +187,13 @@ export function ScenarioHome(){
                 backgroundRepeat: "no-repeat", // Prevents tiling
                 backgroundAttachment: "fixed"  // Optional: keeps background static while content scrolls
             }}>
+            {timeout && (
+            <Progress
+                value={progress}
+                size="lg"
+                color={progress < 25 ? "red" : "blue"}
+            />
+            )}
 
             <Outlet context={workingScenario ? scenarioOutletContext : null}></Outlet>
 

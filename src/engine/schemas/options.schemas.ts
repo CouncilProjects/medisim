@@ -12,7 +12,7 @@ export const OptionsSchema ={
         label: {type: "string"},
         action: {
             type: "string",
-            enum: Object.values(Actions)
+            enum: Object.keys(Actions)
         },
 
         effects: {
