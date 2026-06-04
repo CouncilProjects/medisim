@@ -1,51 +1,64 @@
 import { type FromSchema } from "json-schema-to-ts";
 
-import { conditionSchema } from "./schemas/conditions.schemas";
+import { ScenarioSchema } from "./schemas/scenario.schemas";
+import { stateSchema } from "./schemas/state.schemas";
+import { nodeSchema } from "./schemas/nodes.schemas";
+import { OptionsSchema } from "./schemas/options.schemas";
 import { effectSchema } from "./schemas/effect.schemas";
-import { patientSchema } from "./schemas/patients.schemas";
 import { vitalsSchema } from "./schemas/vitals.schemas";
-import type { Action, ActionKey } from "./schemas/actionEnum";
-
-// ==========================================
-// 1. NO-DEPENDENCY AUTOMATED TYPES
-// ==========================================
-export type Condition = FromSchema<typeof conditionSchema>;
-export type Effect = FromSchema<typeof effectSchema>;
-export type Patient = FromSchema<typeof patientSchema>;
-export type Vitals = FromSchema<typeof vitalsSchema>;
+import { patientSchema } from "./schemas/patients.schemas";
+import { conditionSchema } from "./schemas/conditions.schemas";
 
 
-// FOR SOME F@CKING REASON STATE FAILS TO BE COMPILED I HAVE BEEN AT THIS FOR 1.5 HOURS ALREADY 
-//  I GIVE UP, i will just manually make the type, AVJ was proven useless.... thks mike ..............................
-export type State = {
-    score: number;
-    vitals: Vitals;
-};
+const references = [
+    conditionSchema,
+    effectSchema,
+    patientSchema,
+    vitalsSchema,
+    stateSchema,
+    nodeSchema,
+    OptionsSchema,
+];
 
-export type Option = {
-    label: string;
-    action:ActionKey
-    effects: Effect[];
-};
 
-export type Node = {
-    id: string;
-    text: string;
-    options?: Option[];
-};
 
-export type Timeout = {
-    time: number;
-    effects: Effect[];
-};
+export type Condition = FromSchema<
+    typeof conditionSchema,
+    {references: typeof references }
+>;
 
-export type Scenario = {
-    id: string;
-    uuid?:string,
-    username?: string;
-    title: string;
-    current_node: number;
-    state: State;
-    nodes: Node[];
-    actionsTaken:ActionKey[];
-};
+export type Effect = FromSchema<
+    typeof effectSchema,
+    {references: typeof references }
+>;
+
+export type Patient = FromSchema<
+    typeof patientSchema,
+    { references: typeof references }
+>;
+
+export type Vitals = FromSchema<
+    typeof vitalsSchema,
+    { references: typeof references }
+>;
+
+export type State = FromSchema<
+    typeof stateSchema,
+    { references: typeof references }
+>;
+
+export type Option = FromSchema<
+    typeof OptionsSchema,
+    { references: typeof references }
+>;
+
+export type Node = FromSchema<
+    typeof nodeSchema,
+    { references: typeof references }
+>;
+
+export type Scenario = FromSchema<
+    typeof ScenarioSchema,
+    { references: typeof references }
+>;
+
