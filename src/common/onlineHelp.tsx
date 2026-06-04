@@ -38,7 +38,7 @@ function SectionRender({ sect, words }: SectionRenderProps) {
                         }}
                     >
                         <Text display={'inline-flex'}>
-                            {"[" + (index + 1) + "]-  "}
+                            {" - "}
                             <HighlightText text={step.stepContent} highlight={words} />
                             {step.important && <IconAlertHexagon size={32} display={'span'} color="red" />}
                         </Text>
@@ -61,7 +61,7 @@ export function OnLineHelp({ pageHelp }: OnlineHelpProps) {
     return (
         <Card mah="70dvh" style={{ overflowY: "auto" }}>
             <Title>
-                <HighlightText text={`On-line help for ${pageHelp.pageTitle}`} highlight={keyword} />
+                <HighlightText text={`On-line βοήθεια για την οθόνη: ${pageHelp.pageTitle}`} highlight={keyword} />
             </Title>
             <Divider></Divider>
             <Input type="text" value={keyword.join(' ')} placeholder="Search..." onChange={(ev)=>{setKeyword(ev.currentTarget.value.split(' '))}}></Input>

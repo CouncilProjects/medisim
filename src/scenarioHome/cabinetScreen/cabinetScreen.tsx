@@ -1,4 +1,5 @@
 //npm install @tabler/icons-react
+
 import { useNavigate } from "react-router";
 import React from 'react';
 import {
@@ -9,6 +10,7 @@ import {
     SimpleGrid,
     Box,
     Paper,
+    Modal,
 } from '@mantine/core';
 import { useClickOutside } from '@mantine/hooks';
 // import { useNavigate } from 'react-router';
@@ -30,6 +32,9 @@ import amphotericinImg from '../../assets/amphotericin.jpg';
 import vaccinesImg from '../../assets/vaccines.jpg';
 import naproxenImg from '../../assets/naproxen.jpg';
 import acetaminophenImg from '../../assets/acetaminophen.jpg';
+import { useAppContext } from "../../App";
+import { OnLineHelp, type PageHelp } from "../../common/onlineHelp";
+import { useScenarioContext } from "../scenarioHome";
 
 interface VialButtonProps {
     label: string;
@@ -135,10 +140,15 @@ function ActionCard({ label, color, icon, onClick }: ActionCardProps) {
 
 export default function CabinetScreen() {
     const nav = useNavigate();
-    const ref = useClickOutside(() => nav(-1));
-
+    const ref = useClickOutside(() => nav(-1),null,[document.getElementById("medicineHelpBtn")]);
+    const { helpNeeded } = useScenarioContext();
+    
     return (
         <Center w="100vw" h="100vh" bg="rgba(0,0,0,0.75)" p="sm">
+            <Modal opened={helpNeeded.value} onClose={helpNeeded.toggle} title="Cabinet Screen">
+                    <OnLineHelp pageHelp={onlineHelp}></OnLineHelp>
+            </Modal>
+
             <Stack
                 ref={ref}
                 p="md"
@@ -217,3 +227,33 @@ export default function CabinetScreen() {
         </Center>
     );
 }
+
+const onlineHelp: PageHelp = {
+    pageTitle: "Ντουλάπι Φαρμάκων",
+    activeSections: [
+        {
+            title: "Παυσίπονα",
+            steps: [
+                {
+                    stepContent: "Τα παυσίπονα χρησιμοποιούνται όταν ο ασθενής πονάει. Η ελαφριά έκδοση χρησιμοποιείται για ήπιο πόνο ή όταν ο ασθενής αισθάνεται ζάλη."
+                }
+            ]
+        },
+        {
+            title: "Φάρμακα Πίεσης Αίματος",
+            steps: [
+                {
+                    stepContent: "Αυτό το ράφι περιέχει δύο κατηγορίες φαρμάκων: φάρμακα που αυξάνουν την αρτηριακή πίεση και φάρμακα που τη μειώνουν. Οι κανονικές εκδόσεις χρησιμοποιούνται σε πιο σοβαρές περιπτώσεις, ενώ οι ελαφριές εκδόσεις σε λιγότερο σοβαρές καταστάσεις."
+                }
+            ]
+        },
+        {
+            title:"Φάρμακα Μεταβολής Θερμοκρασίας",
+            steps:[
+                {
+                    stepContent:"Αυτό το ράφι περιέχει φάρμακα που αυξάνουν ή μειώνουν τη θερμοκρασία του σώματος. Χρησιμοποιούνται όταν η θερμοκρασία του ασθενούς βρίσκεται εκτός των φυσιολογικών ορίων. Οι κανονικές εκδόσεις προορίζονται για πιο σοβαρές καταστάσεις, ενώ οι ελαφριές εκδόσεις για ηπιότερες αποκλίσεις."
+                }
+            ]
+        }
+    ]
+};

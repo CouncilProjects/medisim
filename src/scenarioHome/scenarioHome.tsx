@@ -14,11 +14,15 @@ import { OnLineHelp, type PageHelp } from "../common/onlineHelp";
 type ScenarioOutletContext = {
     vitals: Vitals;
     getMedicalSituation: (() => string[]);
+    helpNeeded: {
+        value: boolean;
+        toggle: () => void;
+    }
 }
 
 export function ScenarioHome(){
     const theme = useMantineTheme();
-    const { helpNeeded } = useAppContext();
+    const { helpNeeded } = useAppContext(); //this is needed
     const knownAction = useRef(false);
     const params = useParams();
     const nav = useNavigate();
@@ -134,7 +138,8 @@ export function ScenarioHome(){
     // 3. Compute the context synchronously on every render
     const scenarioOutletContext: ScenarioOutletContext = {
         vitals: workingScenario.state.vitals,
-        getMedicalSituation: ()=>{ return engine.getEventsTillCurrent()}
+        getMedicalSituation: ()=>{ return engine.getEventsTillCurrent()},
+        helpNeeded:helpNeeded
     };
     
 
@@ -150,9 +155,7 @@ export function ScenarioHome(){
 
             <Outlet context={workingScenario ? scenarioOutletContext : null}></Outlet>
 
-            <Modal opened={helpNeeded.value} onClose={helpNeeded.toggle} title="On-line help">
-                    <OnLineHelp pageHelp={onlineHelp}></OnLineHelp>
-            </Modal>
+            
         </Box>
     )
 }
@@ -179,41 +182,4 @@ function Shortcut({ symbolA, symbolB, description }: { symbolA: string; symbolB:
     );
 }
 
-
-const onlineHelp:PageHelp={
-    pageTitle:"Scenario home",
-    activeSections:[
-        {
-            title:"Vitals",
-            steps:[
-                {
-                    stepContent:"In vitals you can find ..."
-                }
-            ]
-        },
-        {
-            title:"Cabinet",
-            steps:[
-                {
-                    stepContent:"In cabinet you can find ..."
-                }
-            ]
-        },
-        {
-            title: "Ventilator",
-            steps: [
-                {
-                    stepContent: "In ventilator you can find ..."
-                }
-            ]
-        },
-        {
-            title: "Patient info",
-            steps: [
-                {
-                    stepContent: "In patient info you can find ..."
-                }
-            ]
-        }
-    ]
-}
+// needed

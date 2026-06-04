@@ -2,12 +2,16 @@ import { useNavigate } from "react-router"
 import { makeHotspot, OverlayImage } from "../common/overlayHotspot"
 import eventBus from "../common/eventBus";
 import { Actions } from "../engine/schemas/actionEnum";
+import { Modal } from "@mantine/core";
+import { OnLineHelp, type PageHelp } from "../common/onlineHelp";
+import { useScenarioContext } from "./scenarioHome";
 
 
 export function OverlayImageMenu(){
     const nav = useNavigate();
-
+    const { helpNeeded } = useScenarioContext();
     return(
+        <>
         <OverlayImage src='/workspace.png'
             hotspots={
                 [
@@ -19,7 +23,50 @@ export function OverlayImageMenu(){
                 ]
             }
         >
+            
         </OverlayImage>
+            <Modal opened={helpNeeded.value} onClose={helpNeeded.toggle} title="On-line help">
+                            <OnLineHelp pageHelp={onlineHelp}></OnLineHelp>
+            </Modal> 
+        </>
     )
+}
+
+const onlineHelp:PageHelp={
+    pageTitle:"Scenario home",
+    activeSections:[
+        {
+            title:"Vitals",
+            steps:[
+                {
+                    stepContent:"In vitals you can find ..."
+                }
+            ]
+        },
+        {
+            title:"Cabinet",
+            steps:[
+                {
+                    stepContent:"In cabinet you can find ..."
+                }
+            ]
+        },
+        {
+            title: "Ventilator",
+            steps: [
+                {
+                    stepContent: "In ventilator you can find ..."
+                }
+            ]
+        },
+        {
+            title: "Patient info",
+            steps: [
+                {
+                    stepContent: "In patient info you can find ..."
+                }
+            ]
+        }
+    ]
 }
 

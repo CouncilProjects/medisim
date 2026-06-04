@@ -70,7 +70,7 @@ export function App() {
             <Button variant='outline' onClick={() => { toggleColorScheme() }}>
               {useThemeDepends(<IconSun></IconSun>, <IconMoon></IconMoon>)}
             </Button>
-            <Button variant="gradient" radius={'50%'} ml={1} onClick={() => { toggle() }}>
+            <Button id="medicineHelpBtn" variant="gradient" radius={'50%'} ml={1} onClick={() => { toggle() }}>
               <IconHelp></IconHelp>
             </Button>
           </Group>
