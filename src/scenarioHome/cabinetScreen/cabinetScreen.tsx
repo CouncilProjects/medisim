@@ -140,7 +140,9 @@ function ActionCard({ label, color, icon, onClick }: ActionCardProps) {
 
 export default function CabinetScreen() {
     const nav = useNavigate();
-    const ref = useClickOutside(() => nav(-1),null,[document.getElementById("medicineHelpBtn")]);
+    const ref = useClickOutside(() => nav(-1), 
+        ['click'], 
+        [document.getElementById("medicineHelpBtn")]);
     const { helpNeeded } = useScenarioContext();
     
     return (
