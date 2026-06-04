@@ -1,5 +1,5 @@
 //npm install @tabler/icons-react
-import { useNavigate, useOutletContext, useParams } from "react-router";
+import { useNavigate } from "react-router";
 import React from 'react';
 import {
     Stack,
@@ -199,9 +199,9 @@ export default function CabinetScreen() {
                     </SimpleGrid>
                 </Section>
 
-                {/* <Divider color="#1e1e1e" my={2} /> */}
+                <Divider color="#1e1e1e" my={2} />
 
-                {/* <Section title="Procedures & Tests" color="blue.4">
+                <Section title="Procedures & Tests" color="blue.4">
                     <SimpleGrid cols={4} spacing={10}>
                         <ActionCard label="Wait" color="#868e96" icon={<IconClock size={20} />}
                             onClick={() => eventBus.emit('buttonPressed', { action: 'wait' })} />
@@ -212,8 +212,7 @@ export default function CabinetScreen() {
                         <ActionCard label="Cholesterol" color="#fab005" icon={<IconHeartRateMonitor size={20} />}
                             onClick={() => eventBus.emit('buttonPressed', { action: 'cholesterolTest' })} />
                     </SimpleGrid>
-                </Section> */}
-
+                </Section>
             </Stack>
         </Center>
     );
