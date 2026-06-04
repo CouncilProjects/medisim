@@ -44,10 +44,10 @@ const onlineHelp:PageHelp={
             ]
         },
         {
-            title:"Cabinet",
+            title:"Cabinet - Ντουλάπι Φαρμάκων",
             steps:[
                 {
-                    stepContent:"In cabinet you can find ..."
+                    stepContent:"Στο ντουλάπι φαρμάκων θα βρείς όλα τα δίαφορα είδη χορηγήσεων. Συγκεκριμένα, θα βρείς αναλγυτικά, φάρμακα μεταβολής πίεσης και φάρμακα μεταβολής θερμοκρασίας."
                 }
             ]
         },

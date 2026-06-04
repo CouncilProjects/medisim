@@ -140,10 +140,18 @@ function ActionCard({ label, color, icon, onClick }: ActionCardProps) {
 
 export default function CabinetScreen() {
     const nav = useNavigate();
-    const ref = useClickOutside(() => nav(-1), 
-        ['click'], 
-        [document.getElementById("medicineHelpBtn")]);
     const { helpNeeded } = useScenarioContext();
+    const ref = useClickOutside(
+    () => {
+        // Only navigate back if the help modal is NOT open
+        if (!helpNeeded.value) {
+            nav(-1);
+        }
+    }, 
+    ['click'], 
+    [document.getElementById("medicineHelpBtn")]
+);
+    
     
     return (
         <Center w="100vw" h="100vh" bg="rgba(0,0,0,0.75)" p="sm">
