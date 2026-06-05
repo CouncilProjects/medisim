@@ -14,7 +14,7 @@ export const nodeSchema = {
             items: {$ref: "option"}
         },
 
-        timeout: {$ref: "timeout"},
+        timeout: {type: "number"},
     },
     additionalProperties:false
 } as const;

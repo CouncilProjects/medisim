@@ -1,4 +1,4 @@
-import { Box, Group, Kbd, Loader, useMantineTheme,Text, Modal, Progress } from "@mantine/core";
+import { Box, Group, Kbd, Loader, useMantineTheme,Text, Progress } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useEffect, useRef, useState} from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router";
@@ -7,9 +7,8 @@ import { type Scenario, type Vitals } from "../engine/types";
 import engine from "../engine/engine";
 import eventBus from "../common/eventBus";
 import { Outlet } from "react-router";
-import { Actions, type Action, type ActionKey } from "../engine/schemas/actionEnum";
+import {type ActionKey } from "../engine/schemas/actionEnum";
 import { useAppContext } from "../App";
-import { OnLineHelp, type PageHelp } from "../common/onlineHelp";
 
 type ScenarioOutletContext = {
     vitals: Vitals;
@@ -65,7 +64,6 @@ export function ScenarioHome(){
         setScenarios((prev)=>{
             return prev.map(scen=>scen.uuid==params.scenarioId?changed:scen);
         });
-
     }
 
     
@@ -123,12 +121,15 @@ export function ScenarioHome(){
             SetProgress(100);
         })
 
+        const unsub6 = eventBus.on("triggerTimeout",()=>{actionHandle("timeout")});
+
         return ()=>{
             unsub();
             unsub2();
             unsub3();
             unsub4();
             unsub5();
+            unsub6();
         }
     }, []);
 
@@ -192,6 +193,8 @@ export function ScenarioHome(){
                 value={progress}
                 size="lg"
                 color={progress < 25 ? "red" : "blue"}
+                animated={true}
+                transitionDuration={200}
             />
             )}
 

@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router"
 import { makeHotspot, OverlayImage } from "../common/overlayHotspot"
 import eventBus from "../common/eventBus";
-import { Actions } from "../engine/schemas/actionEnum";
 import { Modal } from "@mantine/core";
 import { OnLineHelp, type PageHelp } from "../common/onlineHelp";
 import { useScenarioContext } from "./scenarioHome";

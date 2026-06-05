@@ -1,4 +1,3 @@
-import { Actions } from "../engine/schemas/actionEnum"
 import { type Scenario } from "../engine/types"
 
 export const preLoadScenarios:Scenario[] = [
@@ -18,6 +17,9 @@ export const preLoadScenarios:Scenario[] = [
                 temp: { value: 37.2, state: "stable" }
             }
         },
+
+        /*                  
+                ] */
         nodes: [
             {
                 id: "node_0",
@@ -60,21 +62,23 @@ export const preLoadScenarios:Scenario[] = [
                                 node_id: "node_1"
                             }
                         ]
-                    }
-                ],
-                timeout: {
-                    time: 20000,
-                    effects: [
-                    {
-                        type: "score",
-                        value: -5
                     },
                     {
-                        type: "next_node",
-                        node_id: "node_1"
+                        label:"A time out",
+                        action:"timeout",
+                        effects: [
+                            {
+                                type: "score",
+                                value: -10
+                            },
+                            {
+                                type: "next_node",
+                                node_id: "node_1"
+                            }
+                        ]
                     }
-                ]
-            },
+                ],
+                timeout: 5000,
         },
 
             {

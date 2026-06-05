@@ -71,6 +71,7 @@ export function downloadPDF(debrif: Debrief,dateTOprint:string) {
             // Apply spacing
             if (isLastLine) {
                 if(forcePushDown==null){
+                    break;
                 } else if (forcePushDown !== 0.0) {
                     atHeight += forcePushDown;
                 } else {
@@ -101,11 +102,11 @@ export function downloadPDF(debrif: Debrief,dateTOprint:string) {
         return endingX;
     }
 
-        var img = new Image()
+        let img = new Image()
         img.src = '/favicon.png'
         doc.addImage(img, 'png', 4, 4, 24, 24);
 
-        let prev = addWrapped("Medisim", doc.internal.pageSize.width / 2, { forcePushDown:null,fontSize: 15, color: [44, 134, 235], lineHeightTimes: 1, align:'center' });
+        const prev = addWrapped("Medisim", doc.internal.pageSize.width / 2, { forcePushDown:null,fontSize: 15, color: [44, 134, 235], lineHeightTimes: 1, align:'center' });
         addWrapped("gr", prev + 1, { fontSize: 10, color: [44, 134, 235],lineHeightTimes:1.5});
         addWrapped("Scenario : "+debrif.scenarioName,30,{fontSize:15,lineHeightTimes:1, forcePushDown:20});
         

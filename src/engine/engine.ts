@@ -1,6 +1,6 @@
 import eventBus from "../common/eventBus";
 import type { Debrief, NodeTimelineSnapshot } from "../scenarioHome/endScreen/EndScreen";
-import { Actions, type Action, type ActionKey } from "./schemas/actionEnum";
+import { Actions, type ActionKey } from "./schemas/actionEnum";
 import { type Scenario,type Node, type Effect } from "./types";
 
 export class Engine{
@@ -25,12 +25,12 @@ export class Engine{
         if (timeout !== undefined) {
 
             eventBus.emit("nodeEntered", {
-                timeout:timeout.time
+                timeout:timeout
             });
 
             this.timeoutHandle = setTimeout(() => {
-               this.doEffects(timeout!.effects, "timeout") 
-            }, (timeout.time));
+               eventBus.emit("triggerTimeout",null);
+            }, (timeout));
         }
     }
 
@@ -87,12 +87,12 @@ export class Engine{
         if (timeout !== undefined) {
 
             eventBus.emit("nodeEntered", {
-                timeout:timeout.time
+                timeout:timeout
             });
 
             this.timeoutHandle = setTimeout(() => {
-               this.doEffects(timeout!.effects, "timeout") 
-            }, (timeout.time));
+               eventBus.emit("triggerTimeout",null);
+            }, (timeout));
         }
     }
 

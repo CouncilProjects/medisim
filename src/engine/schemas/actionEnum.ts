@@ -42,3 +42,5 @@ export const Actions = {
 export type Action = typeof Actions[keyof typeof Actions];
 
 export type ActionKey = keyof typeof Actions
+
+export const ACTION_KEYS = Object.keys(Actions) as ActionKey[];

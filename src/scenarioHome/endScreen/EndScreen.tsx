@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react"
-import { Accordion, Box, Button, Card,Center,Divider,Group,Image,List,Loader,Modal,NumberFormatter,rgba,Stack,Text, Timeline, TimelineItem } from "@mantine/core";
+import { useEffect } from "react"
+import { Accordion, Box, Button, Card,Center,Divider,Group,Image,List,Loader,Modal,NumberFormatter,Stack,Text, Timeline, TimelineItem } from "@mantine/core";
 import type { Action } from "../../engine/schemas/actionEnum";
 import { useLocation, useNavigate } from "react-router";
 import engine from "../../engine/engine";

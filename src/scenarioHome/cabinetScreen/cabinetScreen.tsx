@@ -1,15 +1,12 @@
 //npm install @tabler/icons-react
 
 import { useNavigate } from "react-router";
-import React from 'react';
 import {
     Stack,
     Text,
     Divider,
     Center,
     SimpleGrid,
-    Box,
-    Paper,
     Modal,
 } from '@mantine/core';
 import { useClickOutside } from '@mantine/hooks';
@@ -32,111 +29,13 @@ import amphotericinImg from '../../assets/amphotericin.jpg';
 import vaccinesImg from '../../assets/vaccines.jpg';
 import naproxenImg from '../../assets/naproxen.jpg';
 import acetaminophenImg from '../../assets/acetaminophen.jpg';
-import { useAppContext } from "../../App";
 import { OnLineHelp, type PageHelp } from "../../common/onlineHelp";
 import { useScenarioContext } from "../scenarioHome";
+import { Section } from "./Section";
+import { VialButton } from "./VialButton";
+import { ActionCard } from "./ActionCard";
 
-interface VialButtonProps {
-    label: string;
-    subtitle: string;
-    onClick: () => void;
-    imageSrc: string;
-}
 
-interface ActionCardProps {
-    label: string;
-    color: string;
-    icon: React.ReactNode;
-    onClick: () => void;
-}
-
-interface SectionProps {
-    title: string;
-    color: string;
-    children: React.ReactNode;
-}
-
-function Section({ title, color, children }: SectionProps) {
-    return (
-        <Stack gap={6}>
-            <Text fw={700} c={color} tt="uppercase" style={{ letterSpacing: 0.8, fontSize: 11 }}>
-                {title}
-            </Text>
-            {children}
-        </Stack>
-    );
-}
-// const params = useParams();
-function VialButton({ label, subtitle, onClick, imageSrc }: VialButtonProps) {
-    return (
-        <Paper
-            onClick={onClick}
-            withBorder
-            style={{
-                cursor: 'pointer',
-                background: '#141414',
-                borderColor: '#222',
-                borderRadius: 8,
-                overflow: 'hidden',
-                transition: 'transform 0.1s ease, border-color 0.1s ease',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#444')}
-            onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#222')}
-        >
-            {/* Reduced height to 90 to prevent scrolling while keeping the image prominent */}
-            <Center h={90} bg="#0a0a0a" p={8}>
-                <img
-                    src={imageSrc}
-                    alt={label}
-                    style={{
-                        maxHeight: '100%',
-                        maxWidth: '100%',
-                        objectFit: 'contain',
-                        display: 'block',
-                    }}
-                />
-            </Center>
-            
-            <Box px={8} py={6} style={{ borderTop: '1px solid #222' }}>
-                <Text fw={600} c="gray.3" style={{ lineHeight: 1.2, fontSize: 12 }}>
-                    {label}
-                </Text>
-                <Text c="dimmed" tt="uppercase" style={{ fontSize: '9px', letterSpacing: 0.4, marginTop: 2 }}>
-                    {subtitle}
-                </Text>
-            </Box>
-        </Paper>
-    );
-}
-
-function ActionCard({ label, color, icon, onClick }: ActionCardProps) {
-    return (
-        <Paper
-            p="xs"
-            withBorder
-            onClick={onClick}
-            style={{
-                cursor: 'pointer',
-                background: '#141414',
-                borderColor: '#222',
-                borderRadius: 8,
-                minHeight: 65,
-                transition: 'border-color 0.1s ease',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.borderColor = color)}
-            onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#222')}
-        >
-            <Stack align="center" justify="center" h="100%" gap={4}>
-                <Box style={{ color }}>
-                    {icon}
-                </Box>
-                <Text fw={600} ta="center" c="gray.3" style={{ lineHeight: 1, fontSize: 11 }}>
-                    {label}
-                </Text>
-            </Stack>
-        </Paper>
-    );
-}
 
 export default function CabinetScreen() {
     const nav = useNavigate();
