@@ -9,53 +9,6 @@ import { useState } from "react";
 
 
 
-const onlineHelp:PageHelp={
-    pageTitle:"Home",
-    activeSections:[
-        {
-            title:"Load scenario",
-            steps:[
-                {
-                    stepContent:"Press the load button"
-                },
-                {
-                    stepContent:"Your file system will open up, chose the json containing your scenario"
-                },
-                {
-                    stepContent:"When you select the scenario you will instantly start it as well",
-                    important:true
-                }
-            ]
-        },
-        {
-            title: "Resume scenario",
-            steps: [
-                {
-                    stepContent: "Press the resume button"
-                },
-                {
-                    stepContent: "A list of incomplete scenarios will open up, chose the scenario you wish to continiue"
-                },
-                {
-                    stepContent: "When you select the scenario you will instantly resume it as well",
-                    important: true
-                }
-            ]
-        },
-        {
-            title: "Preview area",
-            steps: [
-                {
-                    stepContent: "Press the preview button"
-                },
-                {
-                    stepContent: "The image describing your workarea will open up"
-                },
-            ]
-        }
-    ]
-}
-
 
 export default function Home(){
 
@@ -137,4 +90,52 @@ function ChoiceCard({scen,onClicked}:{scen:Scenario,onClicked:()=>void}){
             </Stack>
         </Card>
     )
+}
+
+
+const onlineHelp: PageHelp = {
+    pageTitle: "Αρχική Οθόνη",
+    activeSections: [
+        {
+            title: "Φόρτωση Νέου Σεναρίου",
+            steps: [
+                {
+                    stepContent: "Πατήστε το κουμπί «Φόρτωση Σεναρίου»."
+                },
+                {
+                    stepContent: "Θα ανοίξει το παράθυρο αναζήτησης αρχείων του υπολογιστή σας. Επιλέξτε το αρχείο μορφής .json που περιέχει τα δεδομένα του σεναρίου."
+                },
+                {
+                    stepContent: "Μόλις επιλέξετε το αρχείο, η προσομοίωση του σεναρίου θα ξεκινήσει αυτόματα.",
+                    important: true
+                }
+            ]
+        },
+        {
+            title: "Συνέχιση Ημιτελούς Σεναρίου",
+            steps: [
+                {
+                    stepContent: "Πατήστε το κουμπί «Συνέχιση Σεναρίου»."
+                },
+                {
+                    stepContent: "Θα εμφανιστεί μια λίστα με τα αποθηκευμένα, μη ολοκληρωμένα σενάρια. Επιλέξτε αυτό που επιθυμείτε να συνεχίσετε."
+                },
+                {
+                    stepContent: "Μόλις το επιλέξετε, το σενάριο θα φορτώσει και θα συνεχιστεί ακριβώς από το σημείο που το είχατε αφήσει.",
+                    important: true
+                }
+            ]
+        },
+        {
+            title: "Προεπισκόπηση Χώρου",
+            steps: [
+                {
+                    stepContent: "Πατήστε το κουμπί «Προεπισκόπηση Χώρου»."
+                },
+                {
+                    stepContent: "Θα ανοίξει μια οπτική αναπαράσταση του περιβάλλοντος εργασίας σας για να εξοικειωθείτε με τον χώρο."
+                },
+            ]
+        }
+    ]
 }
