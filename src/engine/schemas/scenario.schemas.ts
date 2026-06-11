@@ -21,6 +21,7 @@ export const ScenarioSchema = {
         },
 
         state: { $ref: "state"},
+        patient: { $ref: "patient"},
 
         nodes: {
             type: "array",

@@ -18,8 +18,14 @@ export const preLoadScenarios:Scenario[] = [
             }
         },
 
-        /*                  
-                ] */
+        patient: {
+            id: "patient_001",
+            name: "John Doe",
+            age: 58,
+            gender : "male",
+            sensitivities: ["bloodpressure"]
+        },
+
         nodes: [
             {
                 id: "node_0",
@@ -157,6 +163,13 @@ export const preLoadScenarios:Scenario[] = [
                 bp: { value: 150, state: "rising" },
                 temp: { value: 45.2, state: "rising" }
             }
+        },
+        patient: {
+            id: "patient_002",
+            name: "Unknown Homeless Patient",
+            age: 47,
+            gender: "other",
+            sensitivities: ["temp"]
         },
         current_node:0,
         actionsTaken:[],

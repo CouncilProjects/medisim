@@ -12,6 +12,7 @@ import { useAppContext } from "../App";
 
 type ScenarioOutletContext = {
     vitals: Vitals;
+    patient?: Scenario['patient'];
     getMedicalSituation: (() => string[]);
     helpNeeded: {
         value: boolean;
@@ -174,6 +175,7 @@ export function ScenarioHome(){
     // 3. Compute the context synchronously on every render
     const scenarioOutletContext: ScenarioOutletContext = {
         vitals: workingScenario.state.vitals,
+        patient: workingScenario.patient,
         getMedicalSituation: ()=>{ return engine.getEventsTillCurrent()},
         helpNeeded:helpNeeded
     };
