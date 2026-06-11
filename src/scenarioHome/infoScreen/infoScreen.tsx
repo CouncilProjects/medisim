@@ -1,7 +1,8 @@
-import { Center, Stack, Text, Paper, ScrollArea, Box, Group, Badge, SimpleGrid } from '@mantine/core';
+import { Center, Stack, Text, Paper, ScrollArea, Box, Group, Badge, SimpleGrid, Modal } from '@mantine/core';
 import { useClickOutside } from '@mantine/hooks';
 import { useNavigate } from 'react-router-dom';
 import { useScenarioContext } from '../scenarioHome';
+import { OnLineHelp, type PageHelp } from '../../common/onlineHelp';
 
 // 1. Lock in the exact strings from your schema
 const ALL_SENSITIVITIES = ["painkillers", "bloodpressure", "temp"] as const;
@@ -10,28 +11,43 @@ const ALL_SENSITIVITIES = ["painkillers", "bloodpressure", "temp"] as const;
 const SENSITIVITY_LABELS: Record<string, string> = {
     "painkillers": "Painkillers",
     "bloodpressure": "Blood Pressure Medicine",
-    "temp": "Temperature Variations" // Feel free to change this to whatever sounds best!
+    "temp": "Temperature Variations" 
 };
 
 export default function InfoScreen() {
     const nav = useNavigate();
-    const ref = useClickOutside(() => nav(-1));
+    const { helpNeeded } = useScenarioContext();
+    const ref = useClickOutside(
+        () => {
+            // Only navigate back if the help modal is NOT open
+            if (!helpNeeded.value) {
+                nav(-1);
+            }
+        }, 
+        ['click'], 
+        [document.getElementById("medicineHelpBtn")]
+    );
     const outletContext = useScenarioContext();
     const patient = outletContext.patient;
-
+    
     return (
         <Center
             w="100%"
             h="100%"
             style={{
-                backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                backdropFilter: 'blur(6px)',
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                zIndex: 1000,
+                backgroundColor: 'rgba(0, 0, 0, 0.6)', // Matches the dark dimming of the ventilation screen
+                // Removed position: 'fixed' so it respects the container's aspect ratio
             }}
         >
+            <Modal 
+                opened={helpNeeded.value} 
+                onClose={helpNeeded.toggle} 
+                title="Patient Info Help" 
+                zIndex={2000}
+            >
+                <OnLineHelp pageHelp={onlineHelp}></OnLineHelp>
+            </Modal>
+
             <Paper
                 ref={ref}
                 radius="md"
@@ -136,7 +152,7 @@ export default function InfoScreen() {
                                                 {ALL_SENSITIVITIES.map((sense) => {
                                                     const hasSense = activeSensitivities.includes(sense);
                                                     
-                                                    // 3. Look up the human-readable label
+                                                    // Look up the human-readable label
                                                     const displayLabel = SENSITIVITY_LABELS[sense] || sense; 
 
                                                     return (
@@ -162,7 +178,6 @@ export default function InfoScreen() {
                                                                     fontFamily: 'monospace',
                                                                 }}
                                                             >
-                                                                {/* 4. Render the nice label instead of the raw string */}
                                                                 {displayLabel}
                                                             </Text>
                                                         </Group>
@@ -218,7 +233,6 @@ export default function InfoScreen() {
                     </Stack>
                 </ScrollArea>
 
-                
                 <Box
                     style={{
                         borderTop: '1px solid #3a5375',
@@ -243,3 +257,25 @@ export default function InfoScreen() {
         </Center>
     );
 }
+
+const onlineHelp: PageHelp = {
+    pageTitle: "Patient info",
+    activeSections: [
+        {
+            title: "Οθόνη Πληροφοριών Ασθενούς",
+            steps: [
+                {
+                    stepContent: "Σε αυτή την οθόνη παρουσιάζεται το πλήρες ιατρικό προφίλ του ασθενούς, συμπεριλαμβανομένων των βασικών δημογραφικών του στοιχείων (ηλικία, φύλο) και του γενικού ιατρικού του ιστορικού."
+                }
+            ]
+        },
+        {
+            title: "Sensitivities Checklist - Λίστα Ευαισθησιών",
+            steps: [
+                {
+                    stepContent: "Εδώ καταγράφονται οι γνωστές ευαισθησίες ή δυσανεξίες του ασθενούς σε συγκεκριμένες κατηγορίες φαρμάκων. Εάν υπάρχει θετική ένδειξη (✓) σε κάποιο φάρμακο, συνιστάται αυστηρά η χορήγηση της ηπιότερης εκδοχής του (π.χ. σκεύασμα 'Light') ή η επιλογή εναλλακτικής αγωγής, προκειμένου να αποφευχθούν πιθανές παρενέργειες."
+                }
+            ]
+        }
+    ]
+};
