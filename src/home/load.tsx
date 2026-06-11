@@ -5,53 +5,7 @@ import { preLoadScenarios } from "./preloadedScenarios";
 import type { Scenario } from "../engine/types";
 import { useLocalStorage } from "@mantine/hooks";
 import { useNavigate } from "react-router";
-
-type ScenarioData = {
-    scenario: string;
-    nodes: number;
-    diff: number;
-};
-
-export function placeholderValidateScenario(data: any): {
-    valid: boolean;
-    error?: string;
-    value?: ScenarioData;
-} {
-    // 1. Must be an object
-    if (!data || typeof data !== "object") {
-        return { valid: false, error: "Data must be an object" };
-    }
-
-    // 2. Check required fields exist
-    const { scenario, nodes, diff } = data;
-
-    if (typeof scenario !== "string" || scenario.trim().length === 0) {
-        return { valid: false, error: "Invalid or missing 'scenario' (string required)" };
-    }
-
-    if (typeof nodes !== "number" || !Number.isFinite(nodes) || nodes <= 0) {
-        return { valid: false, error: "Invalid 'nodes' (positive number required)" };
-    }
-
-    if (typeof diff !== "number" || !Number.isFinite(diff)) {
-        return { valid: false, error: "Invalid 'diff' (number required)" };
-    }
-
-    // 3. Optional sanity rule (you can remove/adjust later)
-    if (nodes > 10000) {
-        return { valid: false, error: "'nodes' is unrealistically large" };
-    }
-
-    // 4. If everything passes
-    return {
-        valid: true,
-        value: {
-            scenario: scenario.trim(),
-            nodes,
-            diff,
-        },
-    };
-}
+import { validateScenario } from "../engine/validators";
 
 export default function LoadScenario({ closeFun}:{closeFun:()=>void}) {
     const [scenarioError,setScenarioError] = useState("");
@@ -91,6 +45,9 @@ export default function LoadScenario({ closeFun}:{closeFun:()=>void}) {
                 return;
             }
             id = await handleCustom(data.get("fileIn") as File,data.get("nameIn") as string);
+            if (!id) {
+                return;
+            }
         } else {
             const preselected = Number(data.get("preselectIn"));
             console.log("here"+preselected);
@@ -125,10 +82,18 @@ export default function LoadScenario({ closeFun}:{closeFun:()=>void}) {
 
         const text = await scenario.text()
 
-        const js = await JSON.parse(text);
+        const js = await JSON.parse(text) as Scenario & { UUID?: string; uuid?: string; username?: string };
 
-        const validated = placeholderValidateScenario(js);
+        js.uuid = js.uuid || crypto.randomUUID();
+        js.UUID = js.UUID || js.uuid;
+        js.username = name;
+
+        const validated = validateScenario(js);
         if (!validated.valid) {
+            const issueText = (validated.errors ?? [])
+                .map((issue) => `${issue.instancePath || "<root>"} ${issue.message ?? "is invalid"}`)
+                .join("; ");
+
             notifications.show(
                 {
                     title: "Error !",
@@ -138,12 +103,11 @@ export default function LoadScenario({ closeFun}:{closeFun:()=>void}) {
                     position: 'top-right'
                 }
             )
-            setError(validated.error||"Bad");
+            setError(issueText || "Scenario JSON failed schema validation");
             return "";
         }
 
-        js.username = name
-        return addScenario(js);
+        return addScenario(js as Scenario);
     }
 
     const [, setScenarios] = useLocalStorage<Scenario[]>({
@@ -152,8 +116,14 @@ export default function LoadScenario({ closeFun}:{closeFun:()=>void}) {
     });
 
     const addScenario = (scen: Scenario) => {
-        setScenarios((prev) => [...prev, scen]);
-        return scen.uuid || "bad";
+        const normalizedScenario = {
+            ...scen,
+            uuid: scen.uuid || crypto.randomUUID(),
+            UUID: scen.UUID || scen.uuid || crypto.randomUUID(),
+        } as Scenario;
+
+        setScenarios((prev) => [...prev, normalizedScenario]);
+        return normalizedScenario.uuid || "bad";
     };
 
 

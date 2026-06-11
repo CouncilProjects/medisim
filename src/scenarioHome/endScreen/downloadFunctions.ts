@@ -37,8 +37,8 @@ export function downloadPDF(debrif: Debrief,dateTOprint:string) {
             fontSize?:number,
             color?:[number,number,number],
             lineHeightTimes?:number,
-            forcePushDown?:number,
-            align?: "left" | "center" | "right" | "justify" |null
+            forcePushDown?: number | null,
+            align?: "left" | "center" | "right" | "justify" | null
         }
 
     function addWrapped(text: string, lineIndentation: number, options?: defOptions): number {
@@ -66,7 +66,7 @@ export function downloadPDF(debrif: Debrief,dateTOprint:string) {
             }
 
             // Draw the text line
-            doc.text(line, lineIndentation, atHeight, align != null ? { align: align } : null);
+            doc.text(line, lineIndentation, atHeight, align != null ? { align: align } : undefined);
 
             // Apply spacing
             if (isLastLine) {
