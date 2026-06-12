@@ -1,18 +1,8 @@
-import { Center, Stack, Text, Paper, ScrollArea, Box, Group, Badge, SimpleGrid, Modal } from '@mantine/core';
+import { Center, Stack, Text, Paper, ScrollArea, Box, Group, Badge, Modal } from '@mantine/core';
 import { useClickOutside } from '@mantine/hooks';
 import { useNavigate } from 'react-router-dom';
 import { useScenarioContext } from '../scenarioHome';
 import { OnLineHelp, type PageHelp } from '../../common/onlineHelp';
-
-// 1. Lock in the exact strings from your schema
-const ALL_SENSITIVITIES = ["painkillers", "bloodpressure", "temp"] as const;
-
-// 2. Create a mapping dictionary for human-readable labels
-const SENSITIVITY_LABELS: Record<string, string> = {
-    "painkillers": "Painkillers",
-    "bloodpressure": "Blood Pressure Medicine",
-    "temp": "Temperature Variations" 
-};
 
 export default function InfoScreen() {
     const nav = useNavigate();
@@ -35,8 +25,7 @@ export default function InfoScreen() {
             w="100%"
             h="100%"
             style={{
-                backgroundColor: 'rgba(0, 0, 0, 0.6)', // Matches the dark dimming of the ventilation screen
-                // Removed position: 'fixed' so it respects the container's aspect ratio
+                backgroundColor: 'rgba(0, 0, 0, 0.6)', 
             }}
         >
             <Modal 
@@ -122,73 +111,12 @@ export default function InfoScreen() {
                             </Text>
                         ) : (
                             Object.entries(patient).map(([key, value], index) => {
+                                // Skip rendering the sensitivities key entirely
+                                if (key === 'sensitivities') return null;
+
                                 const isDarkRow = index % 2 === 0;
                                 const rowBg = isDarkRow ? '#1a2432' : '#223040'; 
                                 
-                                // --- CUSTOM SENSITIVITIES CHECKLIST RENDERER ---
-                                if (key === 'sensitivities') {
-                                    const activeSensitivities = Array.isArray(value) ? value : [];
-                                    
-                                    return (
-                                        <Box
-                                            key={key}
-                                            style={{
-                                                borderLeft: '4px solid #c4813e', 
-                                                padding: '16px 20px',
-                                                backgroundColor: rowBg,
-                                                borderBottom: '1px solid #3a5375',
-                                            }}
-                                        >
-                                            <Text
-                                                tt="uppercase"
-                                                size="xs"
-                                                fw={600}
-                                                mb={12}
-                                                style={{ color: '#8ea4bc', letterSpacing: '1.2px', fontFamily: 'monospace' }}
-                                            >
-                                                Sensitivities Checklist
-                                            </Text>
-                                            <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
-                                                {ALL_SENSITIVITIES.map((sense) => {
-                                                    const hasSense = activeSensitivities.includes(sense);
-                                                    
-                                                    // Look up the human-readable label
-                                                    const displayLabel = SENSITIVITY_LABELS[sense] || sense; 
-
-                                                    return (
-                                                        <Group gap="sm" key={sense} wrap="nowrap">
-                                                            <Box style={{
-                                                                width: 18, 
-                                                                height: 18,
-                                                                border: `2px solid ${hasSense ? '#c4813e' : '#5c7899'}`,
-                                                                backgroundColor: hasSense ? '#c4813e' : 'transparent',
-                                                                display: 'flex', 
-                                                                alignItems: 'center', 
-                                                                justifyContent: 'center',
-                                                                borderRadius: 4,
-                                                                transition: 'all 0.2s ease'
-                                                            }}>
-                                                                {hasSense && <Text size="12px" fw={900} style={{ color: '#132843', lineHeight: 1 }}>✓</Text>}
-                                                            </Box>
-                                                            <Text 
-                                                                size="sm" 
-                                                                fw={hasSense ? 600 : 400} 
-                                                                style={{ 
-                                                                    color: hasSense ? '#deeaf7' : '#738baf', 
-                                                                    fontFamily: 'monospace',
-                                                                }}
-                                                            >
-                                                                {displayLabel}
-                                                            </Text>
-                                                        </Group>
-                                                    );
-                                                })}
-                                            </SimpleGrid>
-                                        </Box>
-                                    );
-                                }
-
-                                // --- DEFAULT RENDERER FOR OTHER PROPERTIES ---
                                 return (
                                     <Box
                                         key={key}
@@ -258,6 +186,8 @@ export default function InfoScreen() {
     );
 }
 
+
+
 const onlineHelp: PageHelp = {
     pageTitle: "Patient info",
     activeSections: [
@@ -266,15 +196,6 @@ const onlineHelp: PageHelp = {
             steps: [
                 {
                     stepContent: "Σε αυτή την οθόνη παρουσιάζεται το πλήρες ιατρικό προφίλ του ασθενούς, συμπεριλαμβανομένων των βασικών δημογραφικών του στοιχείων (ηλικία, φύλο) και του γενικού ιατρικού του ιστορικού."
-                }
-            ]
-        },
-        {
-            title: "Sensitivities Checklist - Λίστα Ευαισθησιών",
-            steps: [
-                {
-                    stepContent: "Εδώ καταγράφονται οι γνωστές ευαισθησίες ή δυσανεξίες του ασθενούς σε συγκεκριμένες κατηγορίες φαρμάκων. Εάν υπάρχει θετική ένδειξη (✓) σε κάποιο φάρμακο, συνιστάται αυστηρά η χορήγηση της ηπιότερης εκδοχής του (π.χ. σκεύασμα 'Light') ή η επιλογή εναλλακτικής αγωγής, προκειμένου να αποφευχθούν πιθανές παρενέργειες.",
-                    important : true
                 }
             ]
         }
