@@ -1,6 +1,16 @@
-import { Stack, Group, Button, Text, Center, rgba, Box, Modal } from '@mantine/core';
+import {
+    Stack,
+    Group,
+    Button,
+    Text,
+    Center,
+    rgba,
+    Box,
+    Modal,
+    SimpleGrid,
+} from '@mantine/core';
 import eventBus from '../../common/eventBus';
-import { useNavigate} from 'react-router';
+import { useNavigate } from 'react-router';
 import { useClickOutside } from '@mantine/hooks';
 import { useScenarioContext } from '../scenarioHome';
 import { VitalWindow } from '../../common/VitalWindow';
@@ -10,47 +20,128 @@ export default function VentilationScreen() {
     const context = useScenarioContext();
     const nav = useNavigate();
     const { helpNeeded } = useScenarioContext();
-    const ref = useClickOutside(
-    () => {
-        // Only navigate back if the help modal is NOT open
-        if (!helpNeeded.value) {
-            nav(-1);
-        }
-    }, 
-    ['click'], 
-    [document.getElementById("medicineHelpBtn")]
-);
-    return (
-        <Center w="100%"  h="100%" bg={rgba('dark',0.6)}>
-            <Modal opened={helpNeeded.value} onClose={helpNeeded.toggle} title="Ventilation Screen">
-                                <OnLineHelp pageHelp={onlineHelp}></OnLineHelp>
-            </Modal>
-            <Stack ref={ref} bg={'dark'} p={24} gap="md">
-                <VitalWindow label='SpO₂' state={context.vitals.spo2.state} value={context.vitals.spo2.value}></VitalWindow>
-                <VitalWindow label='RESPIRATORY RATE' state={context.vitals.rr.state} value={context.vitals.rr.value}></VitalWindow>
 
-                <Box p="md" bg="black" style={{border: "2px solid #333", borderRadius: 8,}}>
-                    <Text c="dimmed" size="xs">
-                        VENTILATION CONTROLS
+    const ref = useClickOutside(
+        () => {
+            if (!helpNeeded.value) {
+                nav(-1);
+            }
+        },
+        ['click'],
+        [document.getElementById('medicineHelpBtn')]
+    );
+
+    return (
+        <Center w="100%" h="100%" bg={rgba('dark', 0.6)}>
+            <Modal
+                opened={helpNeeded.value}
+                onClose={helpNeeded.toggle}
+                title="Ventilation Screen"
+                size="lg"
+            >
+                <OnLineHelp pageHelp={onlineHelp} />
+            </Modal>
+
+            <Stack
+                ref={ref}
+                bg="dark.8"
+                p={32}
+                gap="lg"
+                maw={900}
+                w="90%"
+                style={{
+                    borderRadius: 12,
+                    border: '1px solid #333',
+                    boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
+                }}
+            >
+                <Box>
+                    <Text fw={700} size="xl">
+                        Ventilator Control Panel
                     </Text>
 
-                    <Group grow mt="sm">
-                        <Button onClick={() => eventBus.emit("buttonPressed", { action: "oxygenDensityUp" })}>
-                            Oxygen Density Up
+                    <Text size="sm" c="dimmed">
+                        Oxygenation and respiratory monitoring
+                    </Text>
+                </Box>
+
+                <SimpleGrid cols={2} spacing="md">
+                    <VitalWindow
+                        label="SpO₂"
+                        state={context.vitals.spo2.state}
+                        value={context.vitals.spo2.value}
+                    />
+
+                    <VitalWindow
+                        label="RESPIRATORY RATE"
+                        state={context.vitals.rr.state}
+                        value={context.vitals.rr.value}
+                    />
+                </SimpleGrid>
+
+                <Box
+                    p="xl"
+                    bg="dark.7"
+                    style={{
+                        border: '1px solid #444',
+                        borderRadius: 12,
+                    }}
+                >
+                    <Text fw={600} size="md">
+                        Ventilation Controls
+                    </Text>
+
+                    <Text c="dimmed" size="sm" mb="md">
+                        Adjust oxygen concentration and pump output.
+                    </Text>
+
+                    <Group grow>
+                        <Button
+                            color="blue"
+                            onClick={() =>
+                                eventBus.emit('buttonPressed', {
+                                    action: 'oxygenDensityUp',
+                                })
+                            }
+                        >
+                            Increase O₂ Density
                         </Button>
 
-                        <Button onClick={() => eventBus.emit("buttonPressed", { action: "oxygenDensityDown" })}>
-                            Oxygen Density Down
+                        <Button
+                            variant="light"
+                            color="blue"
+                            onClick={() =>
+                                eventBus.emit('buttonPressed', {
+                                    action: 'oxygenDensityDown',
+                                })
+                            }
+                        >
+                            Decrease O₂ Density
                         </Button>
                     </Group>
 
                     <Group grow mt="sm">
-                        <Button onClick={() => eventBus.emit("buttonPressed", { action: "oxyPumpsUp" })}>
-                            Oxy Pumps Up
+                        <Button
+                            color="green"
+                            onClick={() =>
+                                eventBus.emit('buttonPressed', {
+                                    action: 'oxyPumpsUp',
+                                })
+                            }
+                        >
+                            Increase Pump Rate
                         </Button>
 
-                        <Button onClick={() => eventBus.emit("buttonPressed", { action: "oxyPumpsDown" })}>
-                            Oxy Pumps Down
+                        <Button
+                            variant="light"
+                            color="green"
+                            onClick={() =>
+                                eventBus.emit('buttonPressed', {
+                                    action: 'oxyPumpsDown',
+                                })
+                            }
+                        >
+                            Decrease Pump Rate
                         </Button>
                     </Group>
                 </Box>
@@ -60,39 +151,43 @@ export default function VentilationScreen() {
 }
 
 const onlineHelp: PageHelp = {
-    pageTitle: "Ventilator",
+    pageTitle: 'Ventilator',
     activeSections: [
         {
-            title: "Οθόνη SpO2",
+            title: 'Οθόνη SpO2',
             steps: [
                 {
-                    stepContent: "Η οθόνη του SpO2 δείχνει τα επίπεδα κορεσμού οξυγόνου στο αίμα του ασθενούς. Όταν η τιμή πέφτει εκτός των φυσιολογικών ορίων, η ένδειξη γίνεται κόκκινη. Αν παραμένει στο κανονικό της χρώμα, σημαίνει ότι η οξυγόνωση είναι καλή."
-                }
-            ]
+                    stepContent:
+                        'Η οθόνη του SpO2 δείχνει τα επίπεδα κορεσμού οξυγόνου στο αίμα του ασθενούς. Όταν η τιμή πέφτει εκτός των φυσιολογικών ορίων, η ένδειξη γίνεται κόκκινη. Αν παραμένει στο κανονικό της χρώμα, σημαίνει ότι η οξυγόνωση είναι καλή.',
+                },
+            ],
         },
         {
-            title: "Οθόνη Αναπνευστικού Ρυθμού",
+            title: 'Οθόνη Αναπνευστικού Ρυθμού',
             steps: [
                 {
-                    stepContent: "Στην οθόνη απεικονίζεται ο αριθμός των αναπνοών ανά λεπτό (RR). Εάν ο ρυθμός πέσει ή ανεβεί επικίνδυνα, η ένδειξη γίνεται κόκκινη για να σας προειδοποιήσει. Διαφορετικά, όλα είναι καλα."
-                }
-            ]
+                    stepContent:
+                        'Στην οθόνη απεικονίζεται ο αριθμός των αναπνοών ανά λεπτό (RR). Εάν ο ρυθμός πέσει ή ανεβεί επικίνδυνα, η ένδειξη γίνεται κόκκινη για να σας προειδοποιήσει. Διαφορετικά, όλα είναι καλά.',
+                },
+            ],
         },
         {
-            title: "Oxygen Density Controls",
+            title: 'Oxygen Density Controls',
             steps: [
                 {
-                    stepContent: "Ρυθμίζει το ποσοστό οξυγόνου στο παρεχόμενο μείγμα αέρα (FiO2). Χρησιμοποιήστε τα κουμπιά για να αυξήσετε ή να μειώσετε τη συγκέντρωση ανάλογα με την κατάσταση του ασθενούς."
-                }
-            ]
+                    stepContent:
+                        'Ρυθμίζει το ποσοστό οξυγόνου στο παρεχόμενο μείγμα αέρα (FiO2). Χρησιμοποιήστε τα κουμπιά για να αυξήσετε ή να μειώσετε τη συγκέντρωση ανάλογα με την κατάσταση του ασθενούς.',
+                },
+            ],
         },
         {
-            title: "Oxygen Pumps Controls",
+            title: 'Oxygen Pumps Controls',
             steps: [
                 {
-                    stepContent: "Ελέγχει τον ρυθμό ροής, τον όγκο ή την πίεση του αέρα. Προσαρμόστε την ένταση της αντλίας για να υποστηρίξετε επαρκώς την αναπνοή του ασθενούς."
-                }
-            ]
-        }
-    ]
+                    stepContent:
+                        'Ελέγχει τον ρυθμό ροής, τον όγκο ή την πίεση του αέρα. Προσαρμόστε την ένταση της αντλίας για να υποστηρίξετε επαρκώς την αναπνοή του ασθενούς.',
+                },
+            ],
+        },
+    ],
 };
