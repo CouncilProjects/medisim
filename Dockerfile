@@ -5,7 +5,7 @@ FROM node:22-alpine as build
 WORKDIR /app
 COPY package*.json ./
 # npm clean install so it wont look for stuff to update
-RUN npm ci
+RUN npm install
 COPY . .
 RUN npm run build
 
