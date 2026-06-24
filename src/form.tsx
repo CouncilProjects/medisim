@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from "react-router";
 import { Center, Paper, Text, Checkbox, Select, Textarea, Button, Stack, Group, Alert, MantineThemeProvider } from '@mantine/core';
 import { useClickOutside } from '@mantine/hooks';
@@ -45,9 +45,26 @@ export default function FormScreen() {
     const [errors, setErrors] = useState({ allergies: false, action: false, reasoning: false });
     const [isSuccess, setIsSuccess] = useState(false);
 
-    const ref = useClickOutside(
-    () => {}
-);
+    
+    useEffect(() => {
+        
+        window.history.pushState(null, "", window.location.href);
+
+        
+        const handlePopState = () => {
+            
+            window.history.pushState(null, "", window.location.href);
+        };
+
+        window.addEventListener('popstate', handlePopState);
+
+        return () => {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, []);
+  
+
+    const ref = useClickOutside(() => {});
     
     const allergyOptions = [
         { value: 'painkillers', label: 'Παυσίπονα (Painkillers)' },
@@ -89,9 +106,9 @@ export default function FormScreen() {
         setIsSuccess(true);
         eventBus.emit("buttonPressed", { action: "submitAssessment" });
 
-        // Wait a brief moment so the user can see the green success alert, then navigate back
+        
         setTimeout(() => {
-            nav(".."); // or nav(-1) depending on your specific route structure
+            nav("..");
         }, 1500);
         console.log({
             allergies, 

@@ -40,6 +40,7 @@ import { ActionCard } from "./ActionCard";
 export default function CabinetScreen() {
     const nav = useNavigate();
     const { helpNeeded } = useScenarioContext();
+
     const ref = useClickOutside(
     () => {
         // Only navigate back if the help modal is NOT open
@@ -50,6 +51,7 @@ export default function CabinetScreen() {
     ['click'], 
     [document.getElementById("medicineHelpBtn")]
 );
+
     
     
     return (

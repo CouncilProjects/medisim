@@ -125,8 +125,16 @@ export function ScenarioHome(){
 
         const unsub6 = eventBus.on("triggerTimeout",()=>{actionHandle("timeout")});
 
-        const unsub7 = eventBus.on("showAssessmentForm",()=>{nav(`/scenario/${params.scenarioId}/form`)})
-        
+        // const unsub7 = eventBus.on("showAssessmentForm",()=>{nav(`/scenario/${params.scenarioId}/form`)})
+        const unsub7 = eventBus.on("showAssessmentForm", () => {
+
+            // οταν υπάρχει showAssesmentForm, πάμε αρχική οθόνη και μετά στο form. Αυτη η αλλαγή είναι για να μην έχω overlapping
+            nav(".", { replace: true }); 
+            
+            setTimeout(() => {
+                nav("form");
+            }, 10);
+        });
 
         return ()=>{
             unsub();
