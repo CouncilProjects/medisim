@@ -4,11 +4,17 @@ export const stateSchema = {
 
     type: "object",
 
-    required: ["score", "vitals"],
+    required: ["score", "vitals","assessment"],
 
 
     properties: {
         score: {type: "number" },
+
+        assessment: {
+            type: "array",
+
+            items: {$ref: "assessment"}
+        },
 
         vitals:{$ref: "vitals"}
     },

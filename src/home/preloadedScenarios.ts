@@ -9,6 +9,7 @@ export const preLoadScenarios:Scenario[] = [
         actionsTaken: [],
         state: {
             score: 0,
+            assessment: [],
             vitals: {
                 hr: { value: 110, state: "falling" },
                 spo2: { value: 94, state: "falling" },
@@ -158,6 +159,7 @@ export const preLoadScenarios:Scenario[] = [
         title:"The homeless man",
         state: {
             score: 0,
+            assessment:[],
             vitals: {
                 hr: { value: 150, state: "rising" },
                 spo2: { value: 94, state: "stable" },

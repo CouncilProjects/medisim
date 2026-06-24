@@ -125,7 +125,7 @@ export function ScenarioHome(){
 
         const unsub6 = eventBus.on("triggerTimeout",()=>{actionHandle("timeout")});
 
-        const unsub7 = eventBus.on("showAssessmentForm",()=>{nav("form")})
+        const unsub7 = eventBus.on("showAssessmentForm",()=>{nav(`/scenario/${params.scenarioId}/form`)})
         
 
         return ()=>{

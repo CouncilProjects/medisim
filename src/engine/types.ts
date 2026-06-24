@@ -9,9 +9,10 @@ import { vitalsSchema } from "./schemas/vitals.schemas";
 import { patientSchema } from "./schemas/patients.schemas";
 import { conditionSchema } from "./schemas/conditions.schemas";
 import { timeoutSchema } from "./schemas/timeout.schemas";
-
+import { assessmentSchema } from "./schemas/assessments.schemas";
 
 const references = [
+    assessmentSchema,
     conditionSchema,
     effectSchema,
     patientSchema,
@@ -23,6 +24,11 @@ const references = [
 ];
 
 
+
+export type Assessment = FromSchema<
+    typeof assessmentSchema,
+    { references: typeof references }
+>;
 
 export type Condition = FromSchema<
     typeof conditionSchema,
