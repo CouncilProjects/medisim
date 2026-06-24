@@ -14,8 +14,8 @@ export const StandardForms: Form[] = [
                 options: [
                     "bloodpressure",
                     "painkillers",
-                    "oxygen",
-                    "temperature"
+                    "temperature",
+                    "none"
                 ],
                 required: true
             },

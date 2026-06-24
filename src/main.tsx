@@ -18,6 +18,7 @@ import VentilationScreen from './scenarioHome/ventilationScreen/ventiScreen.tsx'
 import CabinetScreen from './scenarioHome/cabinetScreen/cabinetScreen.tsx';
 import { OverlayImageMenu } from './scenarioHome/overlayImage.tsx';
 import { EndScreen } from './scenarioHome/endScreen/EndScreen.tsx';
+import FormScreen from './form.tsx';
 
 createRoot(document.getElementById('root')!).render(
             <StrictMode>
@@ -34,6 +35,7 @@ createRoot(document.getElementById('root')!).render(
                       <Route path='info' element={<InfoScreen></InfoScreen>}></Route>
                       <Route path='ventilation' element={<VentilationScreen></VentilationScreen>}></Route>
                       <Route path='cabinet' element={<CabinetScreen></CabinetScreen>}></Route>
+                      <Route path='form' element={<FormScreen></FormScreen>}></Route>
                     </Route>
                     <Route path='report' element={<EndScreen></EndScreen>}></Route>
                   </Route>

@@ -7,6 +7,7 @@ import { VitalWindow } from '../../common/VitalWindow';
 import { OnLineHelp, type PageHelp } from '../../common/onlineHelp';
 import { IconBolt, IconHeartbeat } from '@tabler/icons-react'; // Recommended addition
 
+
 export default function VitalScreen() {
     const context = useScenarioContext();
     const nav = useNavigate();

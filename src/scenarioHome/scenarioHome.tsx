@@ -9,6 +9,7 @@ import eventBus from "../common/eventBus";
 import { Outlet } from "react-router";
 import {type ActionKey } from "../engine/schemas/actionEnum";
 import { useAppContext } from "../App";
+import FormScreen from "../form";
 
 type ScenarioOutletContext = {
     vitals: Vitals;
@@ -124,6 +125,9 @@ export function ScenarioHome(){
 
         const unsub6 = eventBus.on("triggerTimeout",()=>{actionHandle("timeout")});
 
+        const unsub7 = eventBus.on("showAssessmentForm",()=>{nav("form")})
+        
+
         return ()=>{
             unsub();
             unsub2();
@@ -131,6 +135,7 @@ export function ScenarioHome(){
             unsub4();
             unsub5();
             unsub6();
+            unsub7();
         }
     }, []);
 
