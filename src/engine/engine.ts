@@ -68,13 +68,23 @@ export class Engine{
 
     private moveToNode(nodeId:string){
         const node = this.scenario.nodes.findIndex(node => node.id == nodeId);
-    
         this.scenario.current_node = node;
         if(this.scenario.nodes[this.scenario.current_node].options.length==0){
             eventBus.emit('end',null);
             return;
         }
         eventBus.emit("movedToNewNode",{nodeTitle:this.scenario.nodes[this.scenario.current_node].text});
+
+        const current_node=this.getCurrentNode();
+
+        if (current_node.form){
+            eventBus.emit("showAssessmentForm", {
+                node: current_node,
+                formId: current_node.form
+            });
+
+            return;
+        }
 
         if (this.timeoutHandle) {
             clearTimeout(this.timeoutHandle);

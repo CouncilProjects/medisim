@@ -1,4 +1,7 @@
 export const Actions = {
+    //assessment
+    submitAssessment: "Submitted assessment",
+
     //timeout
     timeout: "Timeout Triggered",
 

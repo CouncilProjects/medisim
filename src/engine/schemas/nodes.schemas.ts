@@ -8,13 +8,16 @@ export const nodeSchema = {
     properties: {
         id: {type: "string"},
         text: {type: "string"},
+        form: {type: "string"},
+        timeout: {type: "number"},
+        
         options: {
             type: "array",
             
             items: {$ref: "option"}
         },
 
-        timeout: {type: "number"},
+
     },
     additionalProperties:false
 } as const;
