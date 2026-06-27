@@ -1,6 +1,6 @@
 # Medisim
 
-Μια πλατφόρμα προσομοίωσης ΜΕΘ. 
+Μια πλατφόρμα προσομοίωσης ΜΕΘ.
 
 Φτιάχτηκε στα πλαίσια απαλλακτικής εργασίας για το ΠΑΔΑ.
 
@@ -12,8 +12,8 @@
 
 ## For Developers
 
-Για developers/IT, ο οδηγός εγκατάστασης βρίσκεται στον κατάλογο `documentation/developers.pdf`. 
+Για developers/IT, ο οδηγός εγκατάστασης βρίσκεται στον κατάλογο [documentation/developer.pdf](documentation/developer.pdf).
 
-Στον ίδιο κατάλογο θα βρείτε και το έγγραφο χρήσης `userManual.pdf`.
+Στον ίδιο κατάλογο θα βρείτε και το έγγραφο χρήσης [documentation/userManual.pdf](documentation/userManual.pdf).
 
-[text](src/)
+![preview](public/workspace.png)
