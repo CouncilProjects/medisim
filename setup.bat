@@ -30,7 +30,7 @@ echo Build is Ok
 :: We filter for the specific container name and force-remove it if found
 docker ps -aq -f name=^/^%CONTAINER_NAME%^$ >nul 2>&1
 for /f "tokens=*" %%i in ('docker ps -aq -f name=^/^%CONTAINER_NAME%^$') do (
-    echo stop existing container (%CONTAINER_NAME%).
+    echo stop existing container %CONTAINER_NAME%.
     docker rm -f %CONTAINER_NAME% >nul
 )
 
