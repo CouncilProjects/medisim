@@ -85,7 +85,7 @@ export const preLoadScenarios:Scenario[] = [
                         ]
                     }
                 ],
-                timeout: 5000,
+                timeout: 12000,
         },
 
             {
