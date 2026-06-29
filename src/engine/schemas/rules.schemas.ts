@@ -1,11 +1,11 @@
 export const RulesSchema = {
-    $id: "rules",
+    $id: "rule",
     type: "object",
 
     required: ["rule_id", "condition", "text"],
 
     properties:{
-        rule_id: {type: "string"},
+        rule_id: {type: "number", minimum: 0},
         text: {type: "string"},
 
         condition: {
@@ -16,4 +16,4 @@ export const RulesSchema = {
         }
 
     }
-}
+} as const;

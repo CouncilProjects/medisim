@@ -3,7 +3,7 @@ export const assessmentSchema = {
 
     type: "object",
 
-    required: ["nodeID","formID","values"],
+    required: ["nodeID","formID","value"],
 
     properties: {
         nodeID: {type: "string"},

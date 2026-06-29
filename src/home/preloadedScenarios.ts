@@ -11,7 +11,7 @@ export const preLoadScenarios:Scenario[] = [
             score: 0,
             assessment: [],
             vitals: {
-                hr: { value: 110, state: "falling" },
+                hr: { value: 45, state: "falling" },
                 spo2: { value: 94, state: "falling" },
                 rr: { value: 22, state: "rising" },
                 bp: { value: 150, state: "rising" },
@@ -26,6 +26,18 @@ export const preLoadScenarios:Scenario[] = [
             gender : "male",
             sensitivities: ["bloodpressure"]
         },
+
+        global_rules: [
+            {
+                rule_id: 1,
+                text: "Heart rate is critically low.",
+                condition: [
+                    {
+                        "vitals.hr.value": { lt: 50 }
+                    }
+                ]
+            }
+        ],
 
         nodes: [
             {

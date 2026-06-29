@@ -8,12 +8,14 @@ import { patientSchema } from "../schemas/patients.schemas";
 import { ScenarioSchema } from "../schemas/scenario.schemas";
 import { stateSchema } from "../schemas/state.schemas";
 import { vitalsSchema } from "../schemas/vitals.schemas";
+import { RulesSchema } from "../schemas/rules.schemas";
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 
 ajv.addSchema([
     assessmentSchema,
     conditionSchema,
+    RulesSchema,
     ScenarioSchema,
     stateSchema,
     patientSchema,

@@ -1,5 +1,5 @@
 import type { Action, ActionKey } from "../engine/schemas/actionEnum";
-import type { Node } from "../engine/types";
+import type { Assessment, Node } from "../engine/types";
 
 export type AppEvents = {
     end:null,
@@ -9,4 +9,6 @@ export type AppEvents = {
     nodeEntered: {timeout:number},
     triggerTimeout:null,
     showAssessmentForm: {node: Node, formId: string;},
+    assessmentSubmitted: {assessment: Assessment},
+    globalRuleTriggered: {message: string},
 };

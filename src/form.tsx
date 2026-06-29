@@ -3,6 +3,8 @@ import { useNavigate } from "react-router";
 import { Center, Paper, Text, Checkbox, Select, Textarea, Button, Stack, Group, Alert, MantineThemeProvider } from '@mantine/core';
 import { useClickOutside } from '@mantine/hooks';
 import eventBus from './common/eventBus';
+import engine from './engine/engine';
+import type { Assessment } from './engine/types';
 
 export const Actions = {
     timeout: "Λήξη χρόνου (Timeout Triggered)",
@@ -103,19 +105,29 @@ export default function FormScreen() {
             return;
         }
 
+        const currentNode = engine.scenario?.nodes?.[engine.scenario.current_node];
+        const assessment: Assessment = {
+            nodeID: currentNode?.id ?? "",
+            formID: currentNode?.form ?? "",
+            value: {
+                sensitivities: allergies,
+                last_action: action ?? "",
+                reason: reasoning.trim(),
+                notes: notes.trim()
+            }
+        };
+
+        if (engine.scenario) {
+            engine.scenario.state.assessment.push(assessment);
+        }
+
         setIsSuccess(true);
         eventBus.emit("buttonPressed", { action: "submitAssessment" });
+        eventBus.emit("assessmentSubmitted", { assessment });
 
-        
         setTimeout(() => {
             nav("..");
         }, 1500);
-        console.log({
-            allergies, 
-            action,
-            reasoning,
-            notes
-        });
     };
 
     return (

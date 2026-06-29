@@ -23,6 +23,14 @@ export const ScenarioSchema = {
         state: { $ref: "state"},
         patient: { $ref: "patient"},
 
+        
+        global_rules: {
+            type: "array",
+
+            items:{$ref: "rule"}
+        },
+
+
         nodes: {
             type: "array",
 
@@ -32,13 +40,3 @@ export const ScenarioSchema = {
 
     additionalProperties: false
 } as const;
-
-
-/*
-
-        global_rules: {
-            type: "array",
-
-            items:{$ref: "rule"}
-        },
-*/

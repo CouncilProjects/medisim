@@ -6,6 +6,7 @@ import engine from "../../engine/engine";
 import { OnLineHelp, type PageHelp } from "../../common/onlineHelp";
 import { useAppContext } from "../../App";
 import { downloadJSON, downloadPDF } from "./downloadFunctions";
+import type { Assessment } from "../../engine/types";
 
 export function EndScreen() {
   const location = useLocation();
@@ -98,6 +99,26 @@ export function EndScreen() {
 
         <Divider />
 
+        <Text fw={700} mt="sm">Απαντήσεις φόρμας αξιολόγησης</Text>
+        {debrif.assessments.length > 0 ? (
+          <Stack gap="sm" mt="sm">
+            {debrif.assessments.map((assessment, index) => (
+              <Card withBorder key={`${assessment.nodeID}-${index}`} p="sm">
+                <Text fw={600}>Φόρμα: {assessment.formID || "—"}</Text>
+                <Text size="sm">Κόμβος: {assessment.nodeID || "—"}</Text>
+                <Text size="sm">Ευαισθησίες: {assessment.value.sensitivities.join(", ") || "—"}</Text>
+                <Text size="sm">Τελευταία ενέργεια: {assessment.value.last_action || "—"}</Text>
+                <Text size="sm">Αιτιολόγηση: {assessment.value.reason || "—"}</Text>
+                <Text size="sm">Σχόλια: {assessment.value.notes || "—"}</Text>
+              </Card>
+            ))}
+          </Stack>
+        ) : (
+          <Text c="dimmed" mt="sm">Δεν υποβλήθηκαν απαντήσεις φόρμας.</Text>
+        )}
+
+        <Divider mt="md" />
+
         <Text>Χρονογραμμή</Text>
 
         <Box mah={"60dvh"} style={{ overflowY: 'auto' }}>
@@ -160,6 +181,7 @@ export type Debrief = {
   scenarioName: string,
   score: number,
   goodPercent: number,
+  assessments: Assessment[],
   timeline: NodeTimelineSnapshot[]
 }
 

@@ -10,6 +10,7 @@ import { patientSchema } from "./schemas/patients.schemas";
 import { conditionSchema } from "./schemas/conditions.schemas";
 import { timeoutSchema } from "./schemas/timeout.schemas";
 import { assessmentSchema } from "./schemas/assessments.schemas";
+import { RulesSchema } from "./schemas/rules.schemas";
 
 const references = [
     assessmentSchema,
@@ -20,7 +21,8 @@ const references = [
     stateSchema,
     nodeSchema,
     OptionsSchema,
-    timeoutSchema
+    timeoutSchema,
+    RulesSchema
 ];
 
 
@@ -67,6 +69,11 @@ export type Option = FromSchema<
 
 export type Node = FromSchema<
     typeof nodeSchema,
+    { references: typeof references }
+>;
+
+export type Rule = FromSchema<
+    typeof RulesSchema,
     { references: typeof references }
 >;
 

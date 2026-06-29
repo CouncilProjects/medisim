@@ -114,6 +114,22 @@ export function downloadPDF(debrif: Debrief,dateTOprint:string) {
         addWrapped(`Taken by: ${debrif.taker} Score: ${debrif.score}`, 15);
         addWrapped(`Accuracy: ${debrif.goodPercent}%`, 15);
         addWrapped(`Finished at : `+dateTOprint,15,{color:[130,100,200]})
+
+        addWrapped("Assessment form answers", 15, { fontSize: 13, forcePushDown: 8, color: [44, 134, 235] });
+        if (debrif.assessments.length > 0) {
+            for (const assessment of debrif.assessments) {
+                addWrapped(`• Form: ${assessment.formID || "—"}`, 20, { forcePushDown: 3 });
+                addWrapped(`  Node: ${assessment.nodeID || "—"}`, 20, { forcePushDown: 3 });
+                addWrapped(`  Allergies: ${assessment.value.sensitivities.join(", ") || "—"}`, 20, { forcePushDown: 3 });
+                addWrapped(`  Action: ${assessment.value.last_action || "—"}`, 20, { forcePushDown: 3 });
+                addWrapped(`  Reasoning: ${assessment.value.reason || "—"}`, 20, { forcePushDown: 3 });
+                addWrapped(`  Notes: ${assessment.value.notes || "—"}`, 20, { forcePushDown: 6 });
+            }
+        } else {
+            addWrapped("• No assessment answers submitted.", 20, { forcePushDown: 4 });
+        }
+
+        addWrapped("Timeline", 15, { fontSize: 13, forcePushDown: 8, color: [44, 134, 235] });
         for (const nodeLine of debrif.timeline) {
             addWrapped(nodeLine.duringNode+":\" " + nodeLine.nodeText+"\"" , 20);
             

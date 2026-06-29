@@ -127,6 +127,9 @@ export function ScenarioHome(){
 
         // const unsub7 = eventBus.on("showAssessmentForm",()=>{nav(`/scenario/${params.scenarioId}/form`)})
         const unsub7 = eventBus.on("showAssessmentForm", () => {
+            SetTimeoutValue(null);
+            setStartTime(null);
+            SetProgress(0);
 
             // οταν υπάρχει showAssesmentForm, πάμε αρχική οθόνη και μετά στο form. Αυτη η αλλαγή είναι για να μην έχω overlapping
             nav(".", { replace: true }); 
@@ -134,6 +137,25 @@ export function ScenarioHome(){
             setTimeout(() => {
                 nav("form");
             }, 10);
+        });
+
+        const unsub8 = eventBus.on("assessmentSubmitted", () => {
+            if (!params.scenarioId || !engine.scenario) return;
+
+            latestScenario.current = engine.scenario;
+            setScenarios((prev) => {
+                return prev.map(scen => scen.uuid === params.scenarioId ? engine.scenario : scen);
+            });
+        });
+
+        const unsub9 = eventBus.on("globalRuleTriggered", ({ message }) => {
+            notifications.show({
+                title: "Global rule",
+                message,
+                autoClose: 6000,
+                color: theme.colors.orange[4],
+                position: 'top-center'
+            });
         });
 
         return ()=>{
@@ -144,6 +166,8 @@ export function ScenarioHome(){
             unsub5();
             unsub6();
             unsub7();
+            unsub8();
+            unsub9();
         }
     }, []);
 

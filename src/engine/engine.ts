@@ -1,37 +1,25 @@
 import eventBus from "../common/eventBus";
 import type { Debrief, NodeTimelineSnapshot } from "../scenarioHome/endScreen/EndScreen";
 import { Actions, type ActionKey } from "./schemas/actionEnum";
-import { type Scenario,type Node, type Effect } from "./types";
+import { type Scenario,type Node, type Effect, type Rule } from "./types";
 
 export class Engine{
     scenario!:Scenario
+    private triggeredGlobalRules = new Set<number>();
+
     constructor(){
         console.log("Engine made");
     }
 
     setScenario(scen:Scenario){
         this.scenario=scen;
+        this.triggeredGlobalRules.clear();
 
         eventBus.emit("movedToNewNode", { nodeTitle: this.scenario.nodes[this.scenario.current_node].text });
+        this.evaluateGlobalRules();
 
-        if (this.timeoutHandle) {
-            clearTimeout(this.timeoutHandle);
-            this.timeoutHandle = null;
-        }
-
-
-        const timeout = (this.scenario.nodes[this.scenario.current_node].timeout)
-
-        if (timeout !== undefined) {
-
-            eventBus.emit("nodeEntered", {
-                timeout:timeout
-            });
-
-            this.timeoutHandle = setTimeout(() => {
-               eventBus.emit("triggerTimeout",null);
-            }, (timeout));
-        }
+        this.clearTimeoutHandle();
+        this.startCurrentNodeTimeout();
     }
 
     // Source - https://stackoverflow.com/q/39060905
@@ -65,6 +53,89 @@ export class Engine{
     }
 
     private timeoutHandle:any = null;
+    private timeoutToken = 0;
+
+    private clearTimeoutHandle(){
+        if (this.timeoutHandle) {
+            clearTimeout(this.timeoutHandle);
+            this.timeoutHandle = null;
+        }
+        this.timeoutToken += 1;
+    }
+
+    private startCurrentNodeTimeout(){
+        const timeout = this.scenario.nodes[this.scenario.current_node].timeout;
+
+        if (timeout === undefined) {
+            return;
+        }
+
+        eventBus.emit("nodeEntered", { timeout });
+
+        const token = ++this.timeoutToken;
+        this.timeoutHandle = setTimeout(() => {
+            if (token !== this.timeoutToken) {
+                return;
+            }
+
+            eventBus.emit("triggerTimeout", null);
+        }, timeout);
+    }
+
+    private getValueAtPath(root: unknown, path: string): unknown {
+        return path.split(".").reduce<unknown>((current, piece) => {
+            if (current === null || current === undefined || typeof current !== "object") {
+                return undefined;
+            }
+
+            return (current as Record<string, unknown>)[piece];
+        }, root);
+    }
+
+    private matchesCondition(condition: Record<string, { gt?: number; lt?: number; eq?: number }>): boolean {
+        return Object.entries(condition).every(([path, comparator]) => {
+            const value = this.getValueAtPath(this.scenario.state, path);
+
+            if (typeof value !== "number") {
+                return false;
+            }
+
+            if (comparator.gt !== undefined && !(value > comparator.gt)) {
+                return false;
+            }
+
+            if (comparator.lt !== undefined && !(value < comparator.lt)) {
+                return false;
+            }
+
+            if (comparator.eq !== undefined && !(value === comparator.eq)) {
+                return false;
+            }
+
+            return true;
+        });
+    }
+
+    private evaluateGlobalRules(){
+        if (!this.scenario?.global_rules?.length) {
+            return;
+        }
+
+        for (const rule of this.scenario.global_rules as Rule[]) {
+            if (this.triggeredGlobalRules.has(rule.rule_id)) {
+                continue;
+            }
+
+            const allConditionsMet = (rule.condition ?? []).every((condition) => {
+                return this.matchesCondition(condition as Record<string, { gt?: number; lt?: number; eq?: number }>);
+            });
+
+            if (allConditionsMet) {
+                this.triggeredGlobalRules.add(rule.rule_id);
+                eventBus.emit("globalRuleTriggered", { message: rule.text });
+            }
+        }
+    }
 
     private moveToNode(nodeId:string){
         const node = this.scenario.nodes.findIndex(node => node.id == nodeId);
@@ -78,6 +149,8 @@ export class Engine{
         const current_node=this.getCurrentNode();
 
         if (current_node.form){
+            this.clearTimeoutHandle();
+
             eventBus.emit("showAssessmentForm", {
                 node: current_node,
                 formId: current_node.form
@@ -86,24 +159,8 @@ export class Engine{
             return;
         }
 
-        if (this.timeoutHandle) {
-            clearTimeout(this.timeoutHandle);
-            this.timeoutHandle = null;
-        }
-
-
-        const timeout = (this.scenario.nodes[this.scenario.current_node].timeout)
-
-        if (timeout !== undefined) {
-
-            eventBus.emit("nodeEntered", {
-                timeout:timeout
-            });
-
-            this.timeoutHandle = setTimeout(() => {
-               eventBus.emit("triggerTimeout",null);
-            }, (timeout));
-        }
+        this.clearTimeoutHandle();
+        this.startCurrentNodeTimeout();
     }
 
     private doEffects(eff:Effect[],action:ActionKey){
@@ -128,6 +185,8 @@ export class Engine{
                     break;
             }
         }
+        this.evaluateGlobalRules();
+
         if(noNextNode){
             eventBus.emit("end",null);
         }
@@ -218,6 +277,7 @@ export class Engine{
             goodPercent:0.0,
             taker:(scen.username || "XX"),
             score:scen.state.score,
+            assessments: scen.state.assessment ?? [],
             timeline:[]
         }
 
