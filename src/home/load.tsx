@@ -7,191 +7,191 @@ import { useLocalStorage } from "@mantine/hooks";
 import { useNavigate } from "react-router";
 import { validateScenario } from "../engine/validators";
 
-export default function LoadScenario({ closeFun}:{closeFun:()=>void}) {
-    const [scenarioError,setScenarioError] = useState("");
-    const [nameError, setNameError] = useState("");
-    const [error, setError] = useState("");
-    const [checked, setChecked] = useState(false);
-    const nav = useNavigate();
-    const combobox = useCombobox({
-        onDropdownClose: () => combobox.resetSelectedOption(),
-    });
+export default function LoadScenario({ closeFun }: { closeFun: () => void }) {
+  const [scenarioError, setScenarioError] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [error, setError] = useState("");
+  const [checked, setChecked] = useState(false);
+  const nav = useNavigate();
 
-    const options = preLoadScenarios.map((item,index) => (
-        {"label":item.title,"value":index+1}
-    ));
+  const combobox = useCombobox({
+    onDropdownClose: () => combobox.resetSelectedOption(),
+  });
 
+  const options = preLoadScenarios.map((item, index) => (
+    { "label": item.title, "value": index + 1 }
+  ));
 
-    const handleForm = async (e: React.SubmitEvent<HTMLFormElement>)=>{
-        e.preventDefault();
-        
-        
-        const data:FormData = new FormData(e.currentTarget);
+  const handleForm = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-        console.log(data);
+    const data: FormData = new FormData(e.currentTarget);
 
-        if (!( (data.get("nameIn") as string).length>=2 )) {
-            setNameError("Name should be at-least 2 characters");
-            return;
-        }
+    console.log(data);
 
-        let id;
-
-        
-
-        if(checked){
-            if (!(data.get('fileIn') instanceof File)) {
-                setScenarioError("Not a file");
-                return;
-            }
-            id = await handleCustom(data.get("fileIn") as File,data.get("nameIn") as string);
-            if (!id) {
-                return;
-            }
-        } else {
-            const preselected = Number(data.get("preselectIn"));
-            console.log("here"+preselected);
-            if(!preselected){
-                setError("No preselected scenario");
-                return;
-            }
-            if( !(preselected>0&&preselected<=preLoadScenarios.length)){
-                setError("Not correct scenario");
-                return;
-            }
-            
-            const scenPicked = structuredClone(preLoadScenarios[preselected - 1]);
-            scenPicked.username=data.get("nameIn") as string;
-            scenPicked.uuid = crypto.randomUUID();
-            id = addScenario(scenPicked);
-        }
-
-        
-        
-        done();
-        nav("/scenario/"+id);
+    if (!((data.get("nameIn") as string).length >= 2)) {
+      setNameError("Το όνομα πρέπει να αποτελείται από τουλάχιστον 2 χαρακτήρες");
+      return;
     }
 
-    const done = ()=>{
-        closeFun();
+    let id;
+
+    if (checked) {
+      if (!(data.get('fileIn') instanceof File)) {
+        setScenarioError("Δεν επιλέχθηκε έγκυρο αρχείο");
+        return;
+      }
+
+      id = await handleCustom(data.get("fileIn") as File, data.get("nameIn") as string);
+
+      if (!id) {
+        return;
+      }
+    } else {
+      const preselected = Number(data.get("preselectIn"));
+      console.log("here" + preselected);
+
+      if (!preselected) {
+        setError("Δεν έχει επιλεγεί σενάριο");
+        return;
+      }
+
+      if (!(preselected > 0 && preselected <= preLoadScenarios.length)) {
+        setError("Μη έγκυρο σενάριο");
+        return;
+      }
+
+      const scenPicked = structuredClone(preLoadScenarios[preselected - 1]);
+      scenPicked.username = data.get("nameIn") as string;
+      scenPicked.uuid = crypto.randomUUID();
+      id = addScenario(scenPicked);
     }
 
-    const handleCustom = async (scenario:File,name:string):Promise<string> =>{
+    done();
+    nav("/scenario/" + id);
+  }
 
-        console.log(scenario);
+  const done = () => {
+    closeFun();
+  }
 
-        const text = await scenario.text()
+  const handleCustom = async (scenario: File, name: string): Promise<string> => {
 
-        const js = await JSON.parse(text) as Scenario & { UUID?: string; uuid?: string; username?: string };
+    console.log(scenario);
 
-        js.uuid = js.uuid || crypto.randomUUID();
-        js.UUID = js.UUID || js.uuid;
-        js.username = name;
+    const text = await scenario.text();
 
-        const validated = validateScenario(js);
-        if (!validated.valid) {
-            const issueText = (validated.errors ?? [])
-                .map((issue) => `${issue.instancePath || "<root>"} ${issue.message ?? "is invalid"}`)
-                .join("; ");
+    const js = await JSON.parse(text) as Scenario & { UUID?: string; uuid?: string; username?: string };
 
-            notifications.show(
-                {
-                    title: "Error !",
-                    message: "Your JSON scenario is malformed, if you didnt make a mistake contact IT",
-                    autoClose: 4000,
-                    color: 'red',
-                    position: 'top-right'
+    js.uuid = js.uuid || crypto.randomUUID();
+    js.UUID = js.UUID || js.uuid;
+    js.username = name;
+
+    const validated = validateScenario(js);
+
+    if (!validated.valid) {
+      const issueText = (validated.errors ?? [])
+        .map((issue) => `${issue.instancePath || "<root>"} ${issue.message ?? "is invalid"}`)
+        .join("; ");
+
+      notifications.show({
+        title: "Σφάλμα!",
+        message: "Το αρχείο JSON του σεναρίου δεν είναι έγκυρο. Αν δεν πρόκειται για δικό σας λάθος, επικοινωνήστε με το τμήμα Πληροφορικής.",
+        autoClose: 4000,
+        color: 'red',
+        position: 'top-right'
+      });
+
+      setError(issueText || "Το αρχείο JSON του σεναρίου δεν πέρασε τον έλεγχο εγκυρότητας");
+      return "";
+    }
+
+    return addScenario(js as Scenario);
+  }
+
+  const [, setScenarios] = useLocalStorage<Scenario[]>({
+    key: 'medisim-ongoing-scenarios',
+    defaultValue: [],
+  });
+
+  const addScenario = (scen: Scenario) => {
+    const normalizedScenario = {
+      ...scen,
+      uuid: scen.uuid || crypto.randomUUID(),
+      UUID: scen.UUID || scen.uuid || crypto.randomUUID(),
+    } as Scenario;
+
+    setScenarios((prev) => [...prev, normalizedScenario]);
+    return normalizedScenario.uuid || "bad";
+  };
+
+  return (
+    <Modal
+      closeOnClickOutside={false}
+      opened={true}
+      onClose={closeFun}
+      title={"Φόρτωση Σεναρίου"}
+    >
+      <Card>
+        <form onSubmit={handleForm}>
+          <Stack gap="md">
+
+            <Fieldset>
+              <Stack gap="xl">
+                <Switch
+                  checked={checked}
+                  onChange={(event) => setChecked(event.currentTarget.checked)}
+                  label={checked ? "Φόρτωση προσαρμοσμένου σεναρίου" : "Επιλογή προεγκατεστημένου σεναρίου"}
+                  description="Επιλέξτε αν θέλετε να φορτώσετε δικό σας σενάριο ή να χρησιμοποιήσετε κάποιο από τα προεγκατεστημένα."
+                />
+
+                {checked ?
+                  <FileInput
+                    variant="filled"
+                    size="md"
+                    radius="xl"
+                    label="Σενάριο"
+                    withAsterisk
+                    description="Φόρτωση αρχείου σεναρίου (.json)"
+                    placeholder="Επιλέξτε αρχείο"
+                    error={scenarioError}
+                    accept=".json"
+                    clearable
+                    name="fileIn"
+                    required
+                  />
+                  :
+                  <Select
+                    name="preselectIn"
+                    placeholder="Επιλέξτε σενάριο"
+                    label="Επιλογή προεγκατεστημένου σεναρίου"
+                    data={options}
+                    withAsterisk
+                    required
+                  />
                 }
-            )
-            setError(issueText || "Scenario JSON failed schema validation");
-            return "";
-        }
 
-        return addScenario(js as Scenario);
-    }
+                <TextInput
+                  minLength={2}
+                  placeholder="Το όνομά σας"
+                  name="nameIn"
+                  required
+                  withAsterisk
+                  label={"Όνομα εκπαιδευόμενου"}
+                  error={nameError}
+                />
+              </Stack>
+            </Fieldset>
 
-    const [, setScenarios] = useLocalStorage<Scenario[]>({
-        key: 'medisim-ongoing-scenarios',
-        defaultValue: [],
-    });
+            <Button variant="default" type="submit">
+              Φόρτωση & Έναρξη
+            </Button>
 
-    const addScenario = (scen: Scenario) => {
-        const normalizedScenario = {
-            ...scen,
-            uuid: scen.uuid || crypto.randomUUID(),
-            UUID: scen.UUID || scen.uuid || crypto.randomUUID(),
-        } as Scenario;
+          </Stack>
+        </form>
 
-        setScenarios((prev) => [...prev, normalizedScenario]);
-        return normalizedScenario.uuid || "bad";
-    };
-
-
-    return(
-        <Modal closeOnClickOutside={false} opened={true} onClose={closeFun} title={"Load a scenario"}>
-            <Card>
-                <form onSubmit={handleForm}>
-                    <Stack gap="md">
-
-                        <Fieldset>
-                            <Stack gap="xl">
-                                <Switch
-                                    checked={checked}
-                                    onChange={(event) => setChecked(event.currentTarget.checked)}
-                                    label={checked?"Load custom scenario":"Chose preselected scenario"}
-                                    description="Chose whether you want to upload a custom scenario or use a preloaded one"
-                                />
-
-
-                                {checked?
-                                    <FileInput
-                                        variant="filled"
-                                        size="md"
-                                        radius="xl"
-                                        label="Scenario"
-                                        withAsterisk
-                                        description="Load scenario .json"
-                                        placeholder="File input"
-                                        error={scenarioError}
-                                        accept=".json"
-                                        clearable
-                                        name="fileIn"
-                                        required
-                                    />
-                                    :
-                                    <Select
-                                        name="preselectIn"
-                                        placeholder="Pick scenario"
-                                        label="Select a preloaded scenario"
-                                        
-                                        data={options}
-                                        withAsterisk
-                                        required
-                                    >
-
-                                    </Select>
-                                }
-
-                                <TextInput
-                                    minLength={2}
-                                    placeholder="Your name"
-                                    name="nameIn"
-                                    required
-                                    withAsterisk
-                                    label={"Registered name"}
-                                    error={nameError}
-                                />
-                            </Stack>
-                        </Fieldset>
-
-                        <Button variant="default" type="submit">
-                            Load & Start
-                        </Button>
-
-                    </Stack>
-                </form>
-                {error&&<Text c={'red'}>{error}</Text>}
-            </Card>
-        </Modal>
-    )
+        {error && <Text c={'red'}>{error}</Text>}
+      </Card>
+    </Modal>
+  )
 }
