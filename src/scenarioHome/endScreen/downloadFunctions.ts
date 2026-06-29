@@ -7,148 +7,151 @@
 
 import jsPDF from "jspdf";
 import type { Debrief } from "./EndScreen";
+import { Actions } from "../../engine/schemas/actionEnum";
 
-export function downloadJSON(debrif:Debrief) {
-    const data = new Blob([JSON.stringify(debrif)], { type: 'application/json' });
-    const date = new Date().toJSON();
-    const name = "medisim-Report-" + date + ".json"
+export function downloadJSON(debrif: Debrief) {
+  const data = new Blob([JSON.stringify(debrif)], { type: 'application/json' });
+  const date = new Date().toJSON();
+  const name = "medisim-Report-" + date + ".json"
 
-    const url = URL.createObjectURL(data);
+  const url = URL.createObjectURL(data);
 
-    const a = document.createElement('a')
-    a.href = url
-    a.download = name
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = name
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
 }
 
-export function downloadPDF(debrif: Debrief,dateTOprint:string) {
-        const doc = new jsPDF();
-        const date = new Date().toJSON();
+export function downloadPDF(debrif: Debrief, dateTOprint: string) {
+  const doc = new jsPDF();
+  const date = new Date().toJSON();
 
-        
 
-        const name = "medisim-Report-" + date + ".pdf"
-        let atHeight = 10;
-        const pageHeight = doc.internal.pageSize.height;
 
-        type defOptions = {
-            fontSize?:number,
-            color?:[number,number,number],
-            lineHeightTimes?:number,
-            forcePushDown?: number | null,
-            align?: "left" | "center" | "right" | "justify" | null
-        }
+  const name = "medisim-Report-" + date + ".pdf"
+  let atHeight = 10;
+  const pageHeight = doc.internal.pageSize.height;
 
-    function addWrapped(text: string, lineIndentation: number, options?: defOptions): number {
-        const {
-            fontSize = 10,
-            color = [0, 0, 0] as [number, number, number],
-            lineHeightTimes = 0.5,
-            forcePushDown = 0.0,
-            align = null
-        } = options ?? {};
+  type defOptions = {
+    fontSize?: number,
+    color?: [number, number, number],
+    lineHeightTimes?: number,
+    forcePushDown?: number | null,
+    align?: "left" | "center" | "right" | "justify" | null
+  }
 
-        doc.setFontSize(fontSize);
-        doc.setTextColor(...color);
+  function addWrapped(text: string, lineIndentation: number, options?: defOptions): number {
+    const {
+      fontSize = 10,
+      color = [0, 0, 0] as [number, number, number],
+      lineHeightTimes = 0.5,
+      forcePushDown = 0.0,
+      align = null
+    } = options ?? {};
 
-        const lineHeight = fontSize * lineHeightTimes;
-        const lines = doc.splitTextToSize(text, 170);
+    doc.setFontSize(fontSize);
+    doc.setTextColor(...color);
 
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i];
-            const isLastLine = i === lines.length - 1;
+    const lineHeight = fontSize * lineHeightTimes;
+    const lines = doc.splitTextToSize(text, 170);
 
-            if (atHeight > pageHeight - 20) {
-                doc.addPage();
-                atHeight = 20;
-            }
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const isLastLine = i === lines.length - 1;
 
-            // Draw the text line
-            doc.text(line, lineIndentation, atHeight, align != null ? { align: align } : undefined);
+      if (atHeight > pageHeight - 20) {
+        doc.addPage();
+        atHeight = 20;
+      }
 
-            // Apply spacing
-            if (isLastLine) {
-                if(forcePushDown==null){
-                    break;
-                } else if (forcePushDown !== 0.0) {
-                    atHeight += forcePushDown;
-                } else {
-                    atHeight += lineHeight;
-                }
-            } else {
-                atHeight += lineHeight;
-            }
-        }
+      // Draw the text line
+      doc.text(line, lineIndentation, atHeight, align != null ? { align: align } : undefined);
 
-        // Calculate where the last line structurally ends on the X-axis
-        const lastLine = lines[lines.length - 1] || "";
-        const lastLineWidth = doc.getTextWidth(lastLine);
-        let endingX = lineIndentation;
-
-        if (align === "right") {
-            endingX = lineIndentation; // For right-align, lineIndentation acts as the right edge
-        } else if (align === "center") {
-            endingX = lineIndentation + (lastLineWidth / 2);
+      // Apply spacing
+      if (isLastLine) {
+        if (forcePushDown == null) {
+          break;
+        } else if (forcePushDown !== 0.0) {
+          atHeight += forcePushDown;
         } else {
-            // Left aligned (default)
-            endingX = lineIndentation + lastLineWidth;
+          atHeight += lineHeight;
         }
-
-        // reset (revert color)
-        doc.setTextColor(0, 0, 0);
-
-        return endingX;
+      } else {
+        atHeight += lineHeight;
+      }
     }
 
-        let img = new Image()
-        img.src = '/favicon.png'
-        doc.addImage(img, 'png', 4, 4, 24, 24);
+    // Calculate where the last line structurally ends on the X-axis
+    const lastLine = lines[lines.length - 1] || "";
+    const lastLineWidth = doc.getTextWidth(lastLine);
+    let endingX = lineIndentation;
 
-        const prev = addWrapped("Medisim", doc.internal.pageSize.width / 2, { forcePushDown:null,fontSize: 15, color: [44, 134, 235], lineHeightTimes: 1, align:'center' });
-        addWrapped("gr", prev + 1, { fontSize: 10, color: [44, 134, 235],lineHeightTimes:1.5});
-        addWrapped("Scenario : "+debrif.scenarioName,30,{fontSize:15,lineHeightTimes:1, forcePushDown:20});
-        
-        
-        addWrapped(`Taken by: ${debrif.taker} Score: ${debrif.score}`, 15);
-        addWrapped(`Accuracy: ${debrif.goodPercent}%`, 15);
-        addWrapped(`Finished at : `+dateTOprint,15,{color:[130,100,200]})
+    if (align === "right") {
+      endingX = lineIndentation; // For right-align, lineIndentation acts as the right edge
+    } else if (align === "center") {
+      endingX = lineIndentation + (lastLineWidth / 2);
+    } else {
+      // Left aligned (default)
+      endingX = lineIndentation + lastLineWidth;
+    }
 
-        addWrapped("Assessment form answers", 15, { fontSize: 13, forcePushDown: 8, color: [44, 134, 235] });
-        if (debrif.assessments.length > 0) {
-            for (const assessment of debrif.assessments) {
-                addWrapped(`• Form: ${assessment.formID || "—"}`, 20, { forcePushDown: 3 });
-                addWrapped(`  Node: ${assessment.nodeID || "—"}`, 20, { forcePushDown: 3 });
-                addWrapped(`  Allergies: ${assessment.value.sensitivities.join(", ") || "—"}`, 20, { forcePushDown: 3 });
-                addWrapped(`  Action: ${assessment.value.last_action || "—"}`, 20, { forcePushDown: 3 });
-                addWrapped(`  Reasoning: ${assessment.value.reason || "—"}`, 20, { forcePushDown: 3 });
-                addWrapped(`  Notes: ${assessment.value.notes || "—"}`, 20, { forcePushDown: 6 });
-            }
-        } else {
-            addWrapped("• No assessment answers submitted.", 20, { forcePushDown: 4 });
-        }
+    // reset (revert color)
+    doc.setTextColor(0, 0, 0);
 
-        addWrapped("Timeline", 15, { fontSize: 13, forcePushDown: 8, color: [44, 134, 235] });
-        for (const nodeLine of debrif.timeline) {
-            addWrapped(nodeLine.duringNode+":\" " + nodeLine.nodeText+"\"" , 20);
-            
-            for (const act of nodeLine.nodeTimeline) {
-                if(act.valid){
-                    doc.setTextColor(0, 255, 0);
-                } else {
-                    doc.setTextColor(255, 0, 0);
-                }
-                addWrapped(
-                    `• [${act.action}] Affected score by: ${act.scoreDelta}`,
-                    25,
-                    {color:act.valid?[20,200,30]:[200,30,20]}
-                );
-                doc.setTextColor(0, 0, 0);
-            }
-        }
-        
+    return endingX;
+  }
 
-        
-        doc.save(name);
+  let img = new Image()
+  img.src = '/favicon.png'
+  doc.addImage(img, 'png', 4, 4, 24, 24);
+
+  const prev = addWrapped("Medisim", doc.internal.pageSize.width / 2, { forcePushDown: null, fontSize: 15, color: [44, 134, 235], lineHeightTimes: 1, align: 'center' });
+  addWrapped("gr", prev + 1, { fontSize: 10, color: [44, 134, 235], lineHeightTimes: 1.5 });
+  addWrapped("Scenario : " + debrif.scenarioName, 30, { fontSize: 15, lineHeightTimes: 1, forcePushDown: 20 });
+
+
+  addWrapped(`Taken by: ${debrif.taker} Score: ${debrif.score}`, 15);
+  addWrapped(`Accuracy: ${Number(debrif.goodPercent).toFixed(2)}%`, 15);
+  addWrapped(`Finished at : ` + dateTOprint, 15, { color: [130, 100, 200] })
+
+
+
+  addWrapped("Timeline", 15, { fontSize: 13, forcePushDown: 8, color: [44, 134, 235] });
+  for (const nodeLine of debrif.timeline) {
+    addWrapped(nodeLine.duringNode + ": \"" + nodeLine.nodeText + "\"", 20);
+
+    for (const act of nodeLine.nodeTimeline) {
+      if (act.valid) {
+        doc.setTextColor(0, 255, 0);
+      } else {
+        doc.setTextColor(255, 0, 0);
+      }
+      addWrapped(
+        `• [${act.action}] Affected score by: ${act.scoreDelta}`,
+        25,
+        { color: act.valid ? [20, 200, 30] : [200, 30, 20] }
+      );
+      doc.setTextColor(0, 0, 0);
+    }
+  }
+
+  addWrapped("Assessment form answers", 15, { fontSize: 13, forcePushDown: 8, color: [44, 134, 235] });
+  if (debrif.assessments.length > 0) {
+    for (const assessment of debrif.assessments) {
+      addWrapped(`• Form: ${assessment.formID || "—"}`, 20, { forcePushDown: 6 });
+      addWrapped(`  Node: ${assessment.nodeID || "—"}`, 20, { forcePushDown: 6 });
+      addWrapped(`  Allergies: ${assessment.value.sensitivities.join(", ") || "—"}`, 20, { forcePushDown: 6 });
+      addWrapped(`  Action: ${Actions[assessment.value.last_action] || "—"}`, 20, { forcePushDown: 6 });
+      addWrapped(`  Reasoning: ${assessment.value.reason || "—"}`, 20, { forcePushDown: 6 });
+      addWrapped(`  Notes: ${assessment.value.notes || "—"}`, 20, { forcePushDown: 10 });
+    }
+  } else {
+    addWrapped("• No assessment answers submitted.", 20, { forcePushDown: 4 });
+  }
+
+
+
+  doc.save(name);
 }
